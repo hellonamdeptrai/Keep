@@ -1,4 +1,4 @@
-package com.nam.keep.ui.slideshow;
+package com.nam.keep.ui.label;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,18 +10,18 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.nam.keep.databinding.FragmentSlideshowBinding;
+import com.nam.keep.databinding.FragmentLabelBinding;
 
-public class SlideshowFragment extends Fragment {
+public class LabelFragment extends Fragment {
 
-    private FragmentSlideshowBinding binding;
+    private FragmentLabelBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         SlideshowViewModel slideshowViewModel =
                 new ViewModelProvider(this).get(SlideshowViewModel.class);
 
-        binding = FragmentSlideshowBinding.inflate(inflater, container, false);
+        binding = FragmentLabelBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         final TextView textView = binding.textSlideshow;

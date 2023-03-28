@@ -12,14 +12,14 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.nam.keep.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_reminder"
+        android:name="com.nam.keep.ui.reminder.ReminderFragment"
+        android:label="@string/menu_reminder"
+        tools:layout="@layout/fragment_reminder" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.nam.keep.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_label"
+        android:name="com.nam.keep.ui.label.LabelFragment"
+        android:label="@string/menu_label"
+        tools:layout="@layout/fragment_label" />
 </navigation>

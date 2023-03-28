@@ -1,4 +1,4 @@
-package com.nam.keep.ui.gallery;
+package com.nam.keep.ui.reminder;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,18 +10,18 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.nam.keep.databinding.FragmentGalleryBinding;
+import com.nam.keep.databinding.FragmentReminderBinding;
 
-public class GalleryFragment extends Fragment {
+public class ReminderFragment extends Fragment {
 
-    private FragmentGalleryBinding binding;
+    private FragmentReminderBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         GalleryViewModel galleryViewModel =
                 new ViewModelProvider(this).get(GalleryViewModel.class);
 
-        binding = FragmentGalleryBinding.inflate(inflater, container, false);
+        binding = FragmentReminderBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         final TextView textView = binding.textGallery;
