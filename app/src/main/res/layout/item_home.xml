@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="5dp"
+    android:background="@drawable/background_radius"
+    android:orientation="vertical"
+    android:id="@+id/layout_item"
+    android:paddingBottom="5dp">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/main_images_note_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/title_note_home"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textStyle="bold"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        app:layout_constraintTop_toBottomOf="@+id/main_images_note"
+        tools:layout_editor_absoluteX="20dp"/>
+
+    <TextView
+        android:id="@+id/content_note_home"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="15dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="15dp"
+        app:layout_constraintTop_toBottomOf="@+id/title_note"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/main_checkbox_note_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintTop_toBottomOf="@+id/content_note" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/main_categories_note_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_checkbox_note" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible">
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/image_background_home"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="5dp"
+            app:riv_mutate_background="true"
+            app:riv_corner_radius="30dp"
+            app:riv_border_color="@android:color/black"
+            app:riv_border_width="1dp"
+            android:adjustViewBounds="true"
+            tools:ignore="MissingConstraints"
+            app:layout_constraintStart_toEndOf="@+id/main_categories_note_home"
+            app:layout_constraintTop_toBottomOf="@+id/main_checkbox_note_home"/>
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/color_background_image_home"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="5dp"
+            app:riv_mutate_background="true"
+            app:riv_corner_radius="30dp"
+            app:riv_border_color="@android:color/black"
+            app:riv_border_width="1dp"
+            android:adjustViewBounds="true"
+            tools:ignore="MissingConstraints"
+            app:layout_constraintStart_toEndOf="@+id/main_categories_note_home"
+            app:layout_constraintTop_toBottomOf="@+id/main_checkbox_note_home"/>
+    </LinearLayout>
+</LinearLayout>

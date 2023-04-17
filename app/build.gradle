@@ -50,4 +50,11 @@ dependencies {
     // Image loader
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+
+    // butter knife
+    implementation 'com.jakewharton:butterknife:10.2.3'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.3'
+
+    // Gradle
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
 }

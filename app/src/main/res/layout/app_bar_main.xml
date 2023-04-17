@@ -26,10 +26,10 @@
         android:id="@+id/bottom_app_bar"
         style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:fabCradleMargin="7dp"
-        app:fabCradleRoundedCornerRadius="5dp"
+        app:fabCradleRoundedCornerRadius="8dp"
         app:fabCradleVerticalOffset="14dp"
         app:menu="@menu/bottom_nav_menu"
         app:fabAlignmentMode="end">
