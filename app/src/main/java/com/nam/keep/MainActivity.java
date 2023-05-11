@@ -1,5 +1,6 @@
 package com.nam.keep;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
@@ -15,6 +16,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.nam.keep.databinding.ActivityMainBinding;
+import com.nam.keep.ui.note.AddNoteActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intentImage = new Intent(MainActivity.this, AddNoteActivity.class);
+                startActivity(intentImage);
             }
         });
         DrawerLayout drawer = binding.drawerLayout;

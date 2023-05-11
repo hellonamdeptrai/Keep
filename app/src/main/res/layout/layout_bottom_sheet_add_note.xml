@@ -1,0 +1,111 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:id="@+id/bottom_sheet_add_note_container">
+
+    <LinearLayout
+        android:id="@+id/add_image_note"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_outline_image_24"
+            android:contentDescription="@string/action_note_image"
+            tools:ignore="UseAppTint"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/action_note_image"
+            android:layout_marginStart="24dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/add_brush_note"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_outline_brush_24"
+            android:contentDescription="@string/action_note_brush"
+            tools:ignore="UseAppTint"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/action_note_brush"
+            android:layout_marginStart="24dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/add_mic_note"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_mic_none_24"
+            android:contentDescription="@string/action_note_mic"
+            tools:ignore="UseAppTint"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/action_note_mic"
+            android:layout_marginStart="24dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/add_checkbox_note"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_outline_check_box_24"
+            android:contentDescription="@string/action_note_checkbox"
+            tools:ignore="UseAppTint"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="@string/action_note_checkbox"
+            android:layout_marginStart="24dp"/>
+
+    </LinearLayout>
+</LinearLayout>

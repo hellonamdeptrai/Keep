@@ -11,6 +11,19 @@
     <string name="action_account">Tài khoản</string>
     <string name="action_image">Thêm ảnh</string>
     <string name="action_add_note">Thêm ghi chú</string>
+    <string name="action_reminder">Lời nhắc</string>
+    <string name="action_brush">Thêm bản vẽ</string>
+    <string name="action_mic">Thêm âm thanh</string>
+    <string name="action_note_image">Thêm hình ảnh</string>
+    <string name="action_note_brush">Bản vẽ</string>
+    <string name="action_note_mic">Ghi</string>
+    <string name="action_note_checkbox">Hộp kiểm</string>
+    <string name="action_note_delete">Xóa</string>
+    <string name="action_note_share">Gửi</string>
+    <string name="action_note_account">Cộng tác viên</string>
+    <string name="action_note_label">Nhãn</string>
+    <string name="title_bottom_sheet_color_note">Màu</string>
+    <string name="title_bottom_sheet_image_note">Hình nền</string>
 
     <string name="menu_home">Ghi chú</string>
     <string name="menu_reminder">Lời nhắc</string>

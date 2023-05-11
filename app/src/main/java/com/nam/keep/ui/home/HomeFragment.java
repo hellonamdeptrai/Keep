@@ -92,8 +92,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClickItemNote(View view, Note note) {
                 System.out.println("aaaaaaaaaaaaaaaaaaa");
-                Intent intentImage = new Intent(getContext(), AddNoteActivity.class);
-                startActivity(intentImage);
+
             }
         });
         adapter.setData(getListNotes());
@@ -105,7 +104,7 @@ public class HomeFragment extends Fragment {
 
     private ArrayList<Note> getListNotes() {
         ArrayList<Note> notes = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 10; i++) {
             notes.add(new Note(
                     i
                     ,"hehe"
