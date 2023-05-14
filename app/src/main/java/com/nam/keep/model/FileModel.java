@@ -3,13 +3,15 @@ package com.nam.keep.model;
 public class FileModel {
     private String name;
     private String path;
+    private long idNote;
 
     public FileModel() {
     }
 
-    public FileModel(String name, String path) {
+    public FileModel(String name, String path, long idNote) {
         this.name = name;
         this.path = path;
+        this.idNote = idNote;
     }
 
     public String getName() {
@@ -26,5 +28,13 @@ public class FileModel {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public long getIdNote() {
+        return idNote;
+    }
+
+    public void setIdNote(long idNote) {
+        this.idNote = idNote;
     }
 }

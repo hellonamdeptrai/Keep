@@ -12,7 +12,7 @@
     <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
-    <connection id="550d2c2d-42b5-4baa-9293-269cd0f41fd1">
+    <connection id="9a54bcb8-954f-461e-941b-80416d95189c">
       <console name="Connection" type="STANDARD" schema="" session="Main" />
     </connection>
   </component>
@@ -23,19 +23,33 @@
     <open-files />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
-    <filter-actions connection-id="550d2c2d-42b5-4baa-9293-269cd0f41fd1" dataset="main.image" active-filter-id="e2a7adfd-3569-49a5-b1bb-c3229b1eb5dd">
-      <filter id="e2a7adfd-3569-49a5-b1bb-c3229b1eb5dd" name="0" temporary="false" custom-name="false" type="basic" join-type="AND">
+    <filter-actions connection-id="9a54bcb8-954f-461e-941b-80416d95189c" dataset="main.note" active-filter-id="020bfae5-0138-4023-a418-9a8d26dc1c20">
+      <filter id="020bfae5-0138-4023-a418-9a8d26dc1c20" name="0" temporary="false" custom-name="false" type="basic" join-type="AND">
         <condition column="_id" operator="&gt;" value="0" active="true" />
       </filter>
     </filter-actions>
+  </component>
+  <component name="DBNavigator.Project.ExecutionManager">
+    <retain-sticky-names value="false" />
+  </component>
+  <component name="DBNavigator.Project.MethodExecutionManager">
+    <method-browser />
+    <execution-history>
+      <group-entries value="true" />
+      <execution-inputs />
+    </execution-history>
+    <argument-values-cache />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
     <last-used-operator value="EQUAL" />
     <filters />
   </component>
+  <component name="DBNavigator.Project.ScriptExecutionManager" clear-outputs="true">
+    <recently-used-interfaces />
+  </component>
   <component name="DBNavigator.Project.Settings">
     <connections>
-      <connection id="550d2c2d-42b5-4baa-9293-269cd0f41fd1" active="true" signed="true">
+      <connection id="9a54bcb8-954f-461e-941b-80416d95189c" active="true" signed="true">
         <database>
           <name value="Connection" />
           <description value="" />
@@ -50,7 +64,7 @@
           <port value="" />
           <database value="" />
           <files>
-            <file path="C:\Users\tuann\AppData\Local\Google\AndroidStudio2022.1\device-explorer\Pixel_4_API_29 [emulator-5554]\data\data\com.nam.keep\databases\NamKeep.db" schema="main" />
+            <file path="C:\Users\tuann\Downloads\NamKeep.db" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />

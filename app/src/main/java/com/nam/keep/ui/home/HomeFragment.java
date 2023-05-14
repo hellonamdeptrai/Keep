@@ -1,5 +1,6 @@
 package com.nam.keep.ui.home;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -20,7 +22,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.nam.keep.MainActivity;
 import com.nam.keep.R;
+import com.nam.keep.database.DatabaseHelper;
 import com.nam.keep.databinding.FragmentHomeBinding;
 import com.nam.keep.model.Note;
 import com.nam.keep.ui.home.adapter.MyRecyclerAdapter;
@@ -38,15 +42,16 @@ public class HomeFragment extends Fragment {
 
     MyRecyclerAdapter adapter;
     ItemTouchHelper itemTouchHelper;
+    DatabaseHelper myDatabase;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         recyclerView = binding.mainRecycler;
         swipeRefreshLayout = root.findViewById(R.id.refresh_note_home);
+        myDatabase = new DatabaseHelper(getActivity());
         init();
         generateItem();
 
@@ -62,9 +67,6 @@ public class HomeFragment extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Gọi hàm để làm mới các dữ liệu trong RecyclerView ở đây.
-                // Sau khi hoàn thành, gọi swipeRefreshLayout.setRefreshing(false) để dừng
-                // hiển thị animation refresh.
                 loadData();
             }
         });
@@ -79,8 +81,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void init() {
-//        ButterKnife.bind(getActivity());
-        recyclerView = binding.mainRecycler;
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new StaggeredGridLayoutManager(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 3 : 2, StaggeredGridLayoutManager.VERTICAL));
     }
@@ -104,30 +104,42 @@ public class HomeFragment extends Fragment {
 
     private ArrayList<Note> getListNotes() {
         ArrayList<Note> notes = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            notes.add(new Note(
-                    i
-                    ,"hehe"
-                    ,"skudfsf sjfg"
-                    , 0
-                    ,Color.rgb(255,255,255)
-                    ,null
-                    ,1
-            ));
+        Cursor cursor = myDatabase.getNote();
+        if(cursor.getCount() != 0){
+            while (cursor.moveToNext()){
+                notes.add(new Note(Long.parseLong(cursor.getString(0))
+                        ,Integer.parseInt(cursor.getString(1))
+                        ,cursor.getString(2)
+                        ,cursor.getString(3)
+                        ,Integer.parseInt(cursor.getString(4))
+                        ,cursor.getString(5)
+                        ,Integer.parseInt(cursor.getString(6))
+                        ,cursor.getBlob(7)
+                        ,cursor.getString(8)
+                        ,Long.parseLong(cursor.getString(9))
+                ));
+            }
         }
 
         return notes;
     }
 
     private void loadData() {
-        // Giả định là mình có một danh sách các item, được lưu trong một ArrayList.
-        // Mỗi lần làm mới dữ liệu, mình sẽ thêm một item mới vào đầu danh sách.
-        getListNotes();
+        adapter.setData(getListNotes());
+        recyclerView.setAdapter(adapter);
 
         // Sau khi thêm item mới vào danh sách, cập nhật hiển thị của RecyclerView.
         adapter.notifyDataSetChanged();
 
         // Dừng hiển thị animation refresh của SwipeRefreshLayout.
         swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            loadData();
+        }
     }
 }

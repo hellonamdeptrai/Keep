@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intentImage = new Intent(MainActivity.this, AddNoteActivity.class);
-                startActivity(intentImage);
+                Intent intentAddNote = new Intent(MainActivity.this, AddNoteActivity.class);
+                startActivityForResult(intentAddNote,0);
             }
         });
         DrawerLayout drawer = binding.drawerLayout;

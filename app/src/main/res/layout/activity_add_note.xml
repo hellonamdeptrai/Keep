@@ -25,7 +25,8 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/colorPrimaryVariant"
+        android:layout_marginBottom="56dp"
+        android:background="@android:color/transparent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -79,7 +80,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/main_checkbox_note"
                 android:drawableLeft="@drawable/ic_baseline_add_24"
                 android:text="Mục danh sách"
-                android:textColor="@color/black"
                 android:textAllCaps="false"
                 android:visibility="gone"
                 android:textAlignment="textStart"

@@ -1,30 +1,61 @@
 package com.nam.keep.model;
 
+import android.graphics.Bitmap;
+
 public class Note {
-    private int id;
+    private long id;
+    private int index;
     private String title;
     private String content;
     private int isCheckBoxOrContent;
+    private String deadline;
     private int color;
     private byte[] background;
-    private int categoryId;
+    private String updatedAt;
+    private long userId;
 
-    public Note(int id, String title, String content, int isCheckBoxOrContent, int color, byte[] background, int categoryId) {
-        this.id = id;
+    public Note() {
+    }
+
+    public Note(int index, String title, String content, int isCheckBoxOrContent, String deadline, int color, byte[] background, String updatedAt, long userId) {
+        this.index = index;
         this.title = title;
         this.content = content;
         this.isCheckBoxOrContent = isCheckBoxOrContent;
+        this.deadline = deadline;
         this.color = color;
         this.background = background;
-        this.categoryId = categoryId;
+        this.updatedAt = updatedAt;
+        this.userId = userId;
     }
 
-    public int getId() {
+    public Note(long id, int index, String title, String content, int isCheckBoxOrContent, String deadline, int color, byte[] background, String updatedAt, long userId) {
+        this.id = id;
+        this.index = index;
+        this.title = title;
+        this.content = content;
+        this.isCheckBoxOrContent = isCheckBoxOrContent;
+        this.deadline = deadline;
+        this.color = color;
+        this.background = background;
+        this.updatedAt = updatedAt;
+        this.userId = userId;
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     public String getTitle() {
@@ -51,6 +82,14 @@ public class Note {
         this.isCheckBoxOrContent = isCheckBoxOrContent;
     }
 
+    public String getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(String deadline) {
+        this.deadline = deadline;
+    }
+
     public int getColor() {
         return color;
     }
@@ -67,11 +106,19 @@ public class Note {
         this.background = background;
     }
 
-    public int getCategoryId() {
-        return categoryId;
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 }

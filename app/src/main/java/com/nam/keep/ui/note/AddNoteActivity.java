@@ -1,32 +1,46 @@
 package com.nam.keep.ui.note;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.AttributeSet;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.R;
+import com.nam.keep.adapter.IClickChecked;
+import com.nam.keep.adapter.IClickDeleteCheckBox;
+import com.nam.keep.adapter.ITextWatcherCheckBox;
+import com.nam.keep.adapter.RecyclerCheckBoxNoteAdapter;
+import com.nam.keep.adapter.RecyclerImagesAddNoteAdapter;
 import com.nam.keep.database.DatabaseHelper;
+import com.nam.keep.model.CheckBoxContentNote;
 import com.nam.keep.model.FileModel;
+import com.nam.keep.model.Note;
+import com.nam.keep.ui.home.helper.MyItemTouchHelperCallback;
+import com.nam.keep.ui.home.helper.OnStartDangListener;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,11 +51,27 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class AddNoteActivity extends AppCompatActivity {
 
+    private boolean isSaveData = true;
+
+    // View
     private Toolbar mToolbar;
+    private EditText mTitle, mContent;
+    private CoordinatorLayout mMainAddNote;
+    private RoundedImageView mRoundedImageColor;
+    private Button addCheckBox;
+
+    // Data
     private DatabaseHelper dataSource;
+    ArrayList<Uri> listImageIntent = new ArrayList<>();
+    List<CheckBoxContentNote> listCheckBox = new ArrayList<>();
+    private int colorNote = Color.rgb(255,255,255);
+    private Bitmap imageBackground;
+    private int isCheckBoxOrContent = 0;
+    ItemTouchHelper itemTouchHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +84,11 @@ public class AddNoteActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         dataSource = new DatabaseHelper(this);
+
+        mTitle = findViewById(R.id.title_note);
+        mContent = findViewById(R.id.content_note);
+        mMainAddNote = findViewById(R.id.main_container_add_note);
+        mRoundedImageColor = findViewById(R.id.color_background_imaged);
 
         Button mSheetAddButton = findViewById(R.id.sheet_add_note_button);
         Button mSheetColorButton = findViewById(R.id.sheet_color_note_button);
@@ -68,8 +103,8 @@ public class AddNoteActivity extends AppCompatActivity {
                 bottomSheetDialog.findViewById(R.id.add_image_note).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        System.out.println("bbbbbbbbbbbbbbbb");
-//                        openImageContentProvider();
+                        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(intent, 10);
                     }
                 });
                 bottomSheetDialog.findViewById(R.id.add_brush_note).setOnClickListener(new View.OnClickListener() {
@@ -89,8 +124,7 @@ public class AddNoteActivity extends AppCompatActivity {
                 bottomSheetDialog.findViewById(R.id.add_checkbox_note).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        System.out.println("bbbbbbbbbbbbbbbb");
-//                        changeTextToCheckbox();
+                        changeTextToCheckbox();
                     }
                 });
             }
@@ -101,7 +135,7 @@ public class AddNoteActivity extends AppCompatActivity {
                 BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(AddNoteActivity.this);
                 bottomSheetDialog.setContentView(R.layout.layout_bottom_sheet_color_note);
                 bottomSheetDialog.show();
-//                bottomActionColorImage(bottomSheetView);
+                bottomActionColorImage(bottomSheetDialog);
             }
         });
         mSheetThreeDotsNoteButton.setOnClickListener(new View.OnClickListener() {
@@ -112,22 +146,6 @@ public class AddNoteActivity extends AppCompatActivity {
                 bottomSheetDialog.show();
             }
         });
-//
-//        List<Image> images = dataSource.getAllImages();
-//
-//        RecyclerView recyclerView = findViewById(R.id.recycler_view);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        recyclerView.setAdapter(new MyRecyclerAdapter(images));
-
-//        Button addImageButton = findViewById(R.id.add_image_button);
-//        addImageButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                startActivityForResult(intent, 0);
-//
-//            }
-//        });
     }
 
     @Override
@@ -140,25 +158,28 @@ public class AddNoteActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 0 && resultCode == RESULT_OK) {
+        if (requestCode == 10 && resultCode == RESULT_OK) {
             Uri uri = data.getData();
-            String[] projection = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA};
-            Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-            if (cursor != null) {
-                cursor.moveToFirst();
-                String name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
-                String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
-                FileModel fileModel = new FileModel(name,path);
-                String newPath = saveImageToExternalStorage(fileModel);
-                fileModel.setPath(newPath);
-//                saveImageToDatabase(image);
-                cursor.close();
-            }
-            //                dataSource.createImage(imagePath, 2);
+            listImageIntent.add(uri);
+            addListImage();
 
         }
     }
 
+    private void addListImage() {
+        RecyclerView mainImagesNote = findViewById(R.id.main_images_note);
+        mainImagesNote.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
+        RecyclerImagesAddNoteAdapter adapter = new RecyclerImagesAddNoteAdapter(this, listImageIntent, new IClickDeleteCheckBox() {
+            @Override
+            public void onClickDeleteItem(int position) {
+//                listBitmap.remove(position);
+//                addListImage();
+            }
+        });
+        mainImagesNote.setAdapter(adapter);
+    }
+
+    @NonNull
     private String saveImageToExternalStorage(FileModel fileModel) {
         File myDir = new File(getExternalFilesDir(null), "data");
         if (!myDir.exists()) {
@@ -185,10 +206,297 @@ public class AddNoteActivity extends AppCompatActivity {
         return file.getAbsolutePath();
     }
 
+    private void checkBackgroundColorOrImage(int color) {
+        if (imageBackground != null) {
+            if(colorNote == Color.rgb(255,255,255)) {
+                mRoundedImageColor.setBackground(null);
+            } else {
+                mRoundedImageColor.setBackgroundColor(color);
+            }
+        }else {
+            mRoundedImageColor.setBackground(null);
+            mMainAddNote.setBackgroundColor(color);
+        }
+    }
+
+    private void bottomActionColorImage(BottomSheetDialog bottomSheetView) {
+        bottomSheetView.findViewById(R.id.color_note_default).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                colorNote = Color.rgb(255,255,255);
+
+                if (imageBackground == null) {
+                    mRoundedImageColor.setBackground(null);
+                    mMainAddNote.setBackground(null);
+                } else {
+                    mRoundedImageColor.setBackground(null);
+                }
+            }
+        });
+        bottomSheetView.findViewById(R.id.color_note_1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                colorNote = Color.rgb(250,175,168);
+                checkBackgroundColorOrImage(colorNote);
+            }
+        });
+        bottomSheetView.findViewById(R.id.color_note_2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                colorNote = Color.rgb(243,159,118);
+                checkBackgroundColorOrImage(colorNote);
+            }
+        });
+        bottomSheetView.findViewById(R.id.color_note_3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                colorNote = Color.rgb(255,248,184);
+                checkBackgroundColorOrImage(colorNote);
+            }
+        });
+        bottomSheetView.findViewById(R.id.color_note_4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                colorNote = Color.rgb(226,246,211);
+                checkBackgroundColorOrImage(colorNote);
+            }
+        });
+        bottomSheetView.findViewById(R.id.color_note_5).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                colorNote = Color.rgb(180,221,221);
+                checkBackgroundColorOrImage(colorNote);
+            }
+        });
+        bottomSheetView.findViewById(R.id.color_note_6).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                colorNote = Color.rgb(212,228,237);
+                checkBackgroundColorOrImage(colorNote);
+            }
+        });
+
+//        image background
+        bottomSheetView.findViewById(R.id.image_note_default).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkBackgroundColorOrImage(colorNote);
+                imageBackground = null;
+                checkBackgroundColorOrImage(colorNote);
+
+            }
+        });
+        bottomSheetView.findViewById(R.id.image_note_1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Drawable drawable = ContextCompat.getDrawable(AddNoteActivity.this, R.drawable.gg1);
+                imageBackground = ((BitmapDrawable)drawable).getBitmap();
+                mMainAddNote.setBackground(drawable);
+                checkBackgroundColorOrImage(colorNote);
+            }
+        });
+        bottomSheetView.findViewById(R.id.image_note_2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Drawable drawable = ContextCompat.getDrawable(AddNoteActivity.this, R.drawable.gg2);
+                imageBackground = ((BitmapDrawable)drawable).getBitmap();
+                mMainAddNote.setBackground(drawable);
+                checkBackgroundColorOrImage(colorNote);
+            }
+        });
+        bottomSheetView.findViewById(R.id.image_note_3).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Drawable drawable = ContextCompat.getDrawable(AddNoteActivity.this, R.drawable.gg3);
+                imageBackground = ((BitmapDrawable)drawable).getBitmap();
+                mMainAddNote.setBackground(drawable);
+                checkBackgroundColorOrImage(colorNote);
+            }
+        });
+        bottomSheetView.findViewById(R.id.image_note_4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Drawable drawable = ContextCompat.getDrawable(AddNoteActivity.this, R.drawable.gg4);
+                imageBackground = ((BitmapDrawable)drawable).getBitmap();
+                mMainAddNote.setBackground(drawable);
+                checkBackgroundColorOrImage(colorNote);
+            }
+        });
+        bottomSheetView.findViewById(R.id.image_note_5).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Drawable drawable = ContextCompat.getDrawable(AddNoteActivity.this, R.drawable.gg5);
+                imageBackground = ((BitmapDrawable)drawable).getBitmap();
+                mMainAddNote.setBackground(drawable);
+                checkBackgroundColorOrImage(colorNote);
+            }
+        });
+    }
+
+    private void changeTextToCheckbox() {
+        String[] arr = mContent.getText().toString().split("\n");
+        addCheckBox = findViewById(R.id.bottom_add_check_box);
+
+        if (isCheckBoxOrContent == 0) {
+            for (String s : arr) {
+                listCheckBox.add(new CheckBoxContentNote(s, false));
+            }
+            mContent.setVisibility(View.GONE);
+            addCheckBox.setVisibility(View.VISIBLE);
+            isCheckBoxOrContent = 1;
+        } else {
+            endCheckBoxList();
+        }
+        addListCheckBox(listCheckBox);
+        addCheckBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editTextDeleteIdCheckBox();
+                listCheckBox.add(new CheckBoxContentNote());
+                addListCheckBox(listCheckBox);
+            }
+        });
+    }
+
+    private void endCheckBoxList(){
+        StringBuilder data = new StringBuilder();
+        editTextDeleteIdCheckBox();
+        for (int i = 0; i < listCheckBox.size(); i++) {
+            String row = "";
+            row = row + listCheckBox.get(i).getContent() + "\n";
+            data.append(row);
+        }
+        mContent.setVisibility(View.VISIBLE);
+        mContent.setText(data.toString());
+        addCheckBox.setVisibility(View.GONE);
+        listCheckBox = new ArrayList<>();
+        isCheckBoxOrContent = 0;
+    }
+
+    private void editTextDeleteIdCheckBox() {
+        for (int i = 0; i < listCheckBox.size(); i++) {
+            if (listCheckBox.get(i).getContent().startsWith("!!$")) {
+                listCheckBox.get(i).setContent(listCheckBox.get(i).getContent().substring(3));
+                listCheckBox.get(i).setCheckBox(true);
+            }
+        }
+    }
+
+    private void editTextAddIdCheckBox() {
+        editTextDeleteIdCheckBox();
+        for (int i = 0; i < listCheckBox.size(); i++) {
+            if (listCheckBox.get(i).isCheckBox()) {
+                listCheckBox.get(i).setContent("!!$"+listCheckBox.get(i).getContent());
+            }
+        }
+        StringBuilder data = new StringBuilder();
+        for (int i = 0; i < listCheckBox.size(); i++) {
+            String row = "";
+            row = row + listCheckBox.get(i).getContent() + "\n";
+            data.append(row);
+        }
+        mContent.setText(data.toString());
+    }
+
+    private void addListCheckBox(List<CheckBoxContentNote> list) {
+        RecyclerView mainCheckBoxNote = findViewById(R.id.main_checkbox_note);
+
+        mainCheckBoxNote.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        RecyclerCheckBoxNoteAdapter adapter = new RecyclerCheckBoxNoteAdapter( list, new IClickDeleteCheckBox() {
+            @Override
+            public void onClickDeleteItem(int position) {
+                listCheckBox.remove(position);
+                addListCheckBox(listCheckBox);
+                if (listCheckBox.size() == 0) {
+                    endCheckBoxList();
+                }
+            }
+        }, new ITextWatcherCheckBox() {
+            @Override
+            public void TextWatcherItem(int position, String text) {
+                listCheckBox.get(position).setContent(text);
+            }
+        }, new OnStartDangListener() {
+            @Override
+            public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+                itemTouchHelper.startDrag(viewHolder);
+            }
+        }, new IClickChecked() {
+            @Override
+            public void ClickChecked(int position, EditText editText) {
+
+                if (listCheckBox.get(position).getContent().startsWith("!!$")) {
+                    listCheckBox.get(position).setContent(listCheckBox.get(position).getContent().substring(3));
+                    listCheckBox.get(position).setCheckBox(false);
+                    editText.setEnabled(true);
+                } else {
+                    listCheckBox.get(position).setContent("!!$"+editText.getText().toString());
+                    listCheckBox.get(position).setCheckBox(true);
+                    editText.setEnabled(false);
+                }
+
+            }
+        });
+        mainCheckBoxNote.setAdapter(adapter);
+        ItemTouchHelper.Callback callback = new MyItemTouchHelperCallback(adapter);
+        itemTouchHelper = new ItemTouchHelper(callback);
+        itemTouchHelper.attachToRecyclerView(mainCheckBoxNote);
+    }
+
+
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        dataSource.close();
+    protected void onPause() {
+        super.onPause();
+        if (isSaveData && isFinishing()) {
+            ByteArrayOutputStream byteArrayOutputStream = null;
+            if (imageBackground != null) {
+                byteArrayOutputStream = new ByteArrayOutputStream();
+                imageBackground.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+            }
+            if (isCheckBoxOrContent == 1) {
+                editTextAddIdCheckBox();
+            }
+            dataSource.createNote(new Note(
+                    dataSource.getCountNote(),
+                    mTitle.getText().toString(),
+                    mContent.getText().toString(),
+                    isCheckBoxOrContent,
+                    "aaa",
+                    colorNote,
+                    imageBackground != null ? Objects.requireNonNull(byteArrayOutputStream).toByteArray() : null,
+                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()),
+                    1
+            ));
+
+            long idNewNote = dataSource.getNoteIdNew();
+
+            for (Uri uri : listImageIntent) {
+                FileModel fileModel = new FileModel();
+                String[] projection = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA};
+                Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+                if (cursor != null) {
+                    cursor.moveToFirst();
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
+                    String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+                    fileModel = new FileModel(name, path, idNewNote);
+                    String newPath = saveImageToExternalStorage(fileModel);
+                    fileModel.setPath(newPath);
+                    cursor.close();
+                }
+                dataSource.createImage(fileModel);
+            }
+
+//            int idNewNote = myDB.getNoteIdNew();
+//            for (Bitmap bitmap : listBitmap) {
+//                myDB.addImage(bitmap, idNewNote);
+//            }
+//            for (Label label: listLabelNote) {
+//                myDB.updateLabelIdNote(label.getId()+"", idNewNote);
+//            }
+            dataSource.close();
+            setResult(RESULT_OK);
+
+        }
     }
 }
