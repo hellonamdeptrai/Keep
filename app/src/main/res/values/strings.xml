@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Keep</string>
+    <string name="app_name">Nam Keep - Ghi chú nhanh</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Nam</string>
@@ -24,6 +24,17 @@
     <string name="action_note_label">Nhãn</string>
     <string name="title_bottom_sheet_color_note">Màu</string>
     <string name="title_bottom_sheet_image_note">Hình nền</string>
+
+    <string name="edit_text_email_login">Email</string>
+    <string name="edit_text_password_login">Mật khẩu</string>
+    <string name="button_login">Đăng nhập</string>
+    <string name="text_view_signup_login">Đăng ký Nam Keep</string>
+    <string name="text_view_forgot_login">Quên mật khẩu?</string>
+
+    <string name="edit_text_name_signup">Họ và tên</string>
+    <string name="edit_text_password_confirmation_signup">Xác nhận mật khẩu</string>
+    <string name="button_signup">Đăng ký</string>
+    <string name="text_view_back_login_signup">Quay lại đăng nhập</string>
 
     <string name="menu_home">Ghi chú</string>
     <string name="menu_reminder">Lời nhắc</string>

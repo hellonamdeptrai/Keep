@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 
 import com.nam.keep.model.FileModel;
 import com.nam.keep.model.Note;
+import com.nam.keep.model.User;
+import com.nam.keep.utils.UtilsFunction;
 
 import java.io.ByteArrayOutputStream;
 
@@ -32,7 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " (" + DataBaseContract.UserEntry.COLUMN_ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 DataBaseContract.UserEntry.COLUMN_NAME + " TEXT, " +
-                DataBaseContract.UserEntry.COLUMN_AVATAR + " TEXT, " +
+                DataBaseContract.UserEntry.COLUMN_AVATAR + " BLOB, " +
                 DataBaseContract.UserEntry.COLUMN_EMAIL + " TEXT, " +
                 DataBaseContract.UserEntry.COLUMN_PASSWORD + " TEXT );";
         sqLiteDatabase.execSQL(queryUser);
@@ -92,6 +94,40 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DataBaseContract.NoteHasLabelEntry.TABLE);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DataBaseContract.NoteHasUserEntry.TABLE);
         onCreate(sqLiteDatabase);
+    }
+
+    public void createUser(User user) {
+        database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.UserEntry.COLUMN_NAME, user.getName());
+        values.put(DataBaseContract.UserEntry.COLUMN_AVATAR, user.getAvatar());
+        values.put(DataBaseContract.UserEntry.COLUMN_EMAIL, user.getEmail());
+        values.put(DataBaseContract.UserEntry.COLUMN_PASSWORD, user.getPassword());
+        long insertId = database.insert(DataBaseContract.UserEntry.TABLE, null, values);
+        if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public boolean login(User user) {
+        database = this.getReadableDatabase();
+        Cursor cursor = database.query(DataBaseContract.UserEntry.TABLE, null,
+                DataBaseContract.UserEntry.COLUMN_EMAIL + "=?", new String[]{user.getEmail()},
+                null, null, null);
+
+        if (cursor.moveToFirst()) {
+            String storedPassword = cursor.getString(4);
+            if (storedPassword.equals(user.getPassword())) {
+                // Đăng nhập thành công
+                cursor.close();
+                return true;
+            }
+        }
+
+        cursor.close();
+        return false;
     }
 
     public Cursor getNote(){
