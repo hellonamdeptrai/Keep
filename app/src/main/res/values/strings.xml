@@ -36,6 +36,11 @@
     <string name="button_signup">Đăng ký</string>
     <string name="text_view_back_login_signup">Quay lại đăng nhập</string>
 
+    <string name="button_undo_paint">Hoàn tác</string>
+    <string name="button_save_paint">Lưu bản vẽ</string>
+    <string name="button_color_paint">Chọn màu</string>
+    <string name="button_stroke_paint">Kích thước</string>
+
     <string name="menu_home">Ghi chú</string>
     <string name="menu_reminder">Lời nhắc</string>
     <string name="menu_label">Nhãn</string>

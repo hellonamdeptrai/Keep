@@ -11,4 +11,7 @@
     <color name="gray_app_keep">#2d2f33</color>
     <color name="black_app_keep">#1f1f1f</color>
     <color name="white_dark_app_keep">#c2c5c3</color>
+
+    <color name="nam_keep">#F4B400</color>
+    <color name="nam_keep_blur">#4DF4B400</color>
 </resources>

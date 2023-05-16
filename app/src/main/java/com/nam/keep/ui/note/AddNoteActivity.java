@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.nam.keep.MainActivity;
 import com.nam.keep.R;
 import com.nam.keep.adapter.IClickChecked;
 import com.nam.keep.adapter.IClickDeleteCheckBox;
@@ -39,6 +40,8 @@ import com.nam.keep.model.FileModel;
 import com.nam.keep.model.Note;
 import com.nam.keep.ui.home.helper.MyItemTouchHelperCallback;
 import com.nam.keep.ui.home.helper.OnStartDangListener;
+import com.nam.keep.ui.login.LoginActivity;
+import com.nam.keep.ui.paint.PaintActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -110,8 +113,8 @@ public class AddNoteActivity extends AppCompatActivity {
                 bottomSheetDialog.findViewById(R.id.add_brush_note).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        System.out.println("bbbbbbbbbbbbbbbb");
-//                        openImageContentProvider();
+                        Intent intentLogin = new Intent(AddNoteActivity.this, PaintActivity.class);
+                        startActivityForResult(intentLogin, 11);
                     }
                 });
                 bottomSheetDialog.findViewById(R.id.add_mic_note).setOnClickListener(new View.OnClickListener() {
@@ -160,6 +163,12 @@ public class AddNoteActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 10 && resultCode == RESULT_OK) {
             Uri uri = data.getData();
+            listImageIntent.add(uri);
+            addListImage();
+
+        }
+        if (requestCode == 11 && resultCode == RESULT_OK) {
+            Uri uri = data.getParcelableExtra("keyUri");
             listImageIntent.add(uri);
             addListImage();
 
