@@ -157,7 +157,7 @@ public class AddNoteActivity extends AppCompatActivity {
                         layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
                         layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 
-                        Button recordingFinish = dialog.findViewById(R.id.btn_recording_finish);;
+                        Button recordingFinish = dialog.findViewById(R.id.btn_recording_finish);
                         recordingFinish.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -284,8 +284,8 @@ public class AddNoteActivity extends AppCompatActivity {
         RecyclerImagesAddNoteAdapter adapter = new RecyclerImagesAddNoteAdapter(this, listImageIntent, new IClickDeleteCheckBox() {
             @Override
             public void onClickDeleteItem(int position) {
-//                listBitmap.remove(position);
-//                addListImage();
+                listImageIntent.remove(position);
+                addListImage();
             }
         });
         mainImagesNote.setAdapter(adapter);

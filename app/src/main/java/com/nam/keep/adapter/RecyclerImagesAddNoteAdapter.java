@@ -1,10 +1,15 @@
 package com.nam.keep.adapter;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,7 +40,7 @@ public class RecyclerImagesAddNoteAdapter extends RecyclerView.Adapter<RecyclerI
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PhotoNoteViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PhotoNoteViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Uri imagePath = list.get(position);
         Glide.with(context)
                 .load(imagePath)
@@ -46,33 +51,37 @@ public class RecyclerImagesAddNoteAdapter extends RecyclerView.Adapter<RecyclerI
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                final Dialog dialog = new Dialog(context);
-//                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//                dialog.setContentView(R.layout.layout_dialog_image);
-//
-//                Window window = dialog.getWindow();
-//                if (window == null) {
-//                    return;
-//                }
-//
-//                WindowManager.LayoutParams windowAttributes = window.getAttributes();
-//                windowAttributes.gravity = Gravity.CENTER;
-//                window.setAttributes(windowAttributes);
-//                dialog.setCancelable(true);
-//
-//                ImageView imageView = dialog.findViewById(R.id.image_view_detail);
-//                Button button = dialog.findViewById(R.id.button_delete_image);
-//
-//                imageView.setImageBitmap(list.get(position));
-//                button.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        iClickDeleteCheckBox.onClickDeleteItem(position);
-//                        dialog.dismiss();
-//                    }
-//                });
-//                dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-//                dialog.show();
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.layout_dialog_image);
+
+                WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+                layoutParams.copyFrom(dialog.getWindow().getAttributes());
+                layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+                layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+
+                ImageView imageView = dialog.findViewById(R.id.image_view_detail);
+                ImageButton closeImage = dialog.findViewById(R.id.button_close_image);
+                ImageButton deleteImage = dialog.findViewById(R.id.button_delete_image);
+
+                Glide.with(context)
+                        .load(imagePath)
+                        .into(imageView);
+                closeImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                deleteImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        iClickDeleteCheckBox.onClickDeleteItem(position);
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
+                dialog.getWindow().setAttributes(layoutParams);
             }
         });
     }
