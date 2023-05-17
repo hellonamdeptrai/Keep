@@ -1,24 +1,38 @@
 package com.nam.keep.ui.note;
 
+import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
+import android.media.MediaFormat;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -43,12 +57,14 @@ import com.nam.keep.ui.home.helper.OnStartDangListener;
 import com.nam.keep.ui.login.LoginActivity;
 import com.nam.keep.ui.paint.PaintActivity;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -75,6 +91,7 @@ public class AddNoteActivity extends AppCompatActivity {
     private Bitmap imageBackground;
     private int isCheckBoxOrContent = 0;
     ItemTouchHelper itemTouchHelper;
+    MediaRecorder mediaRecorder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +123,7 @@ public class AddNoteActivity extends AppCompatActivity {
                 bottomSheetDialog.findViewById(R.id.add_image_note).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        bottomSheetDialog.dismiss();
                         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         startActivityForResult(intent, 10);
                     }
@@ -113,6 +131,7 @@ public class AddNoteActivity extends AppCompatActivity {
                 bottomSheetDialog.findViewById(R.id.add_brush_note).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        bottomSheetDialog.dismiss();
                         Intent intentLogin = new Intent(AddNoteActivity.this, PaintActivity.class);
                         startActivityForResult(intentLogin, 11);
                     }
@@ -120,13 +139,41 @@ public class AddNoteActivity extends AppCompatActivity {
                 bottomSheetDialog.findViewById(R.id.add_mic_note).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        System.out.println("bbbbbbbbbbbbbbbb");
-//                        openImageContentProvider();
+                        bottomSheetDialog.dismiss();
+                        startSpeechRecognition();
+                    }
+                });
+                bottomSheetDialog.findViewById(R.id.add_recording_note).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        bottomSheetDialog.dismiss();
+                        startRecording();
+                        final Dialog dialog = new Dialog(AddNoteActivity.this);
+                        dialog.setContentView(R.layout.layout_dialog_recording);
+                        dialog.setCancelable(false);
+
+                        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+                        layoutParams.copyFrom(dialog.getWindow().getAttributes());
+                        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+                        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+                        Button recordingFinish = dialog.findViewById(R.id.btn_recording_finish);;
+                        recordingFinish.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                stopRecording();
+                                dialog.dismiss();
+                            }
+                        });
+
+                        dialog.show();
+                        dialog.getWindow().setAttributes(layoutParams);
                     }
                 });
                 bottomSheetDialog.findViewById(R.id.add_checkbox_note).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        bottomSheetDialog.dismiss();
                         changeTextToCheckbox();
                     }
                 });
@@ -173,7 +220,63 @@ public class AddNoteActivity extends AppCompatActivity {
             addListImage();
 
         }
+        if (requestCode == 12 && resultCode == RESULT_OK) {
+            String str = "";
+            ArrayList<String> result = data.getStringArrayListExtra(
+                    RecognizerIntent.EXTRA_RESULTS);
+            str = mContent.getText().toString() + Objects.requireNonNull(result).get(0);
+            mContent.setText(str);
+        }
     }
+
+    private void startRecording() {
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        String fileName = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        File myDir = new File(getExternalFilesDir(null), "audio");
+        if (!myDir.exists()) {
+            myDir.mkdirs();
+        }
+        File file = new File(myDir, fileName);
+        String filePath = file.getAbsolutePath();
+        mediaRecorder.setOutputFile(filePath);
+
+        try {
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopRecording() {
+        if (mediaRecorder != null) {
+            mediaRecorder.stop();
+            mediaRecorder.release();
+            mediaRecorder = null;
+        }
+    }
+
+    private void startSpeechRecognition() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Thử nói gì đó");
+
+        try {
+            startActivityForResult(intent, 12);
+        }
+        catch (Exception e) {
+            Toast.makeText(AddNoteActivity.this, " " + e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 
     private void addListImage() {
         RecyclerView mainImagesNote = findViewById(R.id.main_images_note);
@@ -190,13 +293,13 @@ public class AddNoteActivity extends AppCompatActivity {
 
     @NonNull
     private String saveImageToExternalStorage(FileModel fileModel) {
-        File myDir = new File(getExternalFilesDir(null), "data");
+        File myDir = new File(getExternalFilesDir(null), "image");
         if (!myDir.exists()) {
             myDir.mkdirs();
         }
         // Tạo tên tệp ảnh dựa trên thời gian hiện tại.
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String fileName = timeStamp + "_" + fileModel.getName() + ".jpg";
+        String fileName = timeStamp + "_" + fileModel.getName();
 
         File file = new File(myDir, fileName);
         try {
