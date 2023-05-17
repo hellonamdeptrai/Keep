@@ -1,4 +1,4 @@
-package com.nam.keep.adapter;
+package com.nam.keep.ui.note.helper;
 
 import android.widget.EditText;
 

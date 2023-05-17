@@ -1,4 +1,4 @@
-package com.nam.keep.adapter;
+package com.nam.keep.ui.note.adapter;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.R;
+import com.nam.keep.ui.note.helper.IClickDeleteCheckBox;
 
 import java.util.List;
 

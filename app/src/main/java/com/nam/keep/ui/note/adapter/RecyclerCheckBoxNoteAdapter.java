@@ -1,4 +1,4 @@
-package com.nam.keep.adapter;
+package com.nam.keep.ui.note.adapter;
 
 import android.annotation.SuppressLint;
 import android.text.Editable;
@@ -20,6 +20,9 @@ import com.nam.keep.R;
 import com.nam.keep.model.CheckBoxContentNote;
 import com.nam.keep.ui.home.helper.ItemTouchHelperAdapter;
 import com.nam.keep.ui.home.helper.OnStartDangListener;
+import com.nam.keep.ui.note.helper.IClickChecked;
+import com.nam.keep.ui.note.helper.IClickDeleteCheckBox;
+import com.nam.keep.ui.note.helper.ITextWatcherCheckBox;
 
 import java.util.List;
 

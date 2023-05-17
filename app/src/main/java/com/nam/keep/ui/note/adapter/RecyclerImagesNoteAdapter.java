@@ -1,6 +1,5 @@
-package com.nam.keep.adapter;
+package com.nam.keep.ui.note.adapter;
 
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.nam.keep.R;
 import com.makeramen.roundedimageview.RoundedImageView;
-import com.nam.keep.model.Note;
-import com.nam.keep.ui.home.helper.IClickItemDetail;
 
 import java.util.List;
 
