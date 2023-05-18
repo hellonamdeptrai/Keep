@@ -16,14 +16,9 @@ import java.util.List;
 public class RecyclerImagesNoteAdapter extends RecyclerView.Adapter<RecyclerImagesNoteAdapter.PhotoNoteViewHolder>{
 
     private List<String> mImagePaths;
-    private IClickItemNoteDetail iClickItemDetail;
-    public interface IClickItemNoteDetail {
-        void onClickItemNote(View view);
-    }
 
-    public RecyclerImagesNoteAdapter(List<String> imagePaths, IClickItemNoteDetail iClickItemDetail) {
+    public RecyclerImagesNoteAdapter(List<String> imagePaths) {
         mImagePaths = imagePaths;
-        this.iClickItemDetail = iClickItemDetail;
     }
 
     @NonNull
@@ -41,12 +36,6 @@ public class RecyclerImagesNoteAdapter extends RecyclerView.Adapter<RecyclerImag
                 .override(200,300)
                 .centerCrop()
                 .into(holder.imageView);
-        holder.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                iClickItemDetail.onClickItemNote(view);
-            }
-        });
     }
 
     @Override

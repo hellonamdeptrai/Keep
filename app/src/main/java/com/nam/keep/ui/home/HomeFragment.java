@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.MainActivity;
 import com.nam.keep.R;
 import com.nam.keep.database.DatabaseHelper;
@@ -31,6 +34,7 @@ import com.nam.keep.ui.home.adapter.MyRecyclerAdapter;
 import com.nam.keep.ui.home.helper.IClickItemDetail;
 import com.nam.keep.ui.home.helper.MyItemTouchHelperCallback;
 import com.nam.keep.ui.note.AddNoteActivity;
+import com.nam.keep.ui.note.EditNoteActivity;
 
 import java.util.ArrayList;
 
@@ -90,44 +94,49 @@ public class HomeFragment extends Fragment {
             itemTouchHelper.startDrag(viewHolder);
         }, new IClickItemDetail() {
             @Override
-            public void onClickItemNote(View view, Note note) {
-//                Intent intent = new Intent(getActivity(), EditNoteActivity.class);
-//                intent.putExtra(EditNoteActivity.EXTRA_PARAM_ID, note.getId());
-//                intent.putExtra(EditNoteActivity.VIEW_NAME_TITLE, note.getTitle());
-//                intent.putExtra(EditNoteActivity.VIEW_NAME_CONTENT, note.getContent());
-//                intent.putExtra(EditNoteActivity.VIEW_NAME_IS_CHECKBOX, note.getIsCheckBoxOrContent());
-//                intent.putExtra(EditNoteActivity.VIEW_NAME_BACKGROUND, note.getBackground());
-//                intent.putExtra(EditNoteActivity.VIEW_NAME_EDIT_COLOR, note.getColor());
-//
-//                Pair isColorData, isContentOrCheckbox;
-//                if (note.getColor() != Color.rgb(255,255,255)) {
-//                    isColorData = new Pair<>(view.findViewById(R.id.color_background_image_home),
-//                            EditNoteActivity.VIEW_NAME_EDIT_COLOR);
-//                } else {
-//                    isColorData = new Pair<>(view.findViewById(R.id.title_note_home),
-//                            EditNoteActivity.VIEW_NAME_EDIT_COLOR);
-//                }
-//
-//                if (note.getIsCheckBoxOrContent() == 1) {
-//                    isContentOrCheckbox = new Pair<>(view.findViewById(R.id.main_checkbox_note_home),
-//                            EditNoteActivity.VIEW_NAME_LIST_CHECKBOX);
-//                } else {
-//                    isContentOrCheckbox = new Pair<>(view.findViewById(R.id.content_note_home),
-//                            EditNoteActivity.VIEW_NAME_CONTENT);
-//                }
-//
-//                @SuppressWarnings("unchecked")
-//                ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                        getActivity(),
-//                        new Pair<>(view.findViewById(R.id.main_images_note_home),
-//                                EditNoteActivity.VIEW_NAME_IMAGE),
-//                        new Pair<>(view.findViewById(R.id.title_note_home),
-//                                EditNoteActivity.VIEW_NAME_TITLE),
-//                        isContentOrCheckbox,
-//                        isColorData,
-//                        new Pair<>(view.findViewById(R.id.main_categories_note_home),
-//                                EditNoteActivity.VIEW_NAME_LABEL));
-//                ActivityCompat.startActivity(getActivity(), intent, activityOptions.toBundle());
+            public void onClickItemNote(View view, TextView title, TextView content,
+                                        ImageView imageView, RecyclerView mainImagesNoteHome,
+                                        RecyclerView mainCheckboxNoteHome,
+                                        RecyclerView mainCategoriesNoteHome,
+                                        RoundedImageView colorBackgroundImagedHome,
+                                        RoundedImageView imageBackgroundHome, Note note) {
+                Intent intent = new Intent(view.getContext(), EditNoteActivity.class);
+                intent.putExtra(EditNoteActivity.EXTRA_PARAM_ID, note.getId());
+                intent.putExtra(EditNoteActivity.VIEW_NAME_TITLE, note.getTitle());
+                intent.putExtra(EditNoteActivity.VIEW_NAME_CONTENT, note.getContent());
+                intent.putExtra(EditNoteActivity.VIEW_NAME_IS_CHECKBOX, note.getIsCheckBoxOrContent());
+                intent.putExtra(EditNoteActivity.VIEW_NAME_BACKGROUND, note.getBackground());
+                intent.putExtra(EditNoteActivity.VIEW_NAME_EDIT_COLOR, note.getColor());
+
+                Pair isColorData, isContentOrCheckbox;
+                if (note.getColor() != Color.rgb(255,255,255)) {
+                    isColorData = new Pair<>(colorBackgroundImagedHome,
+                            EditNoteActivity.VIEW_NAME_EDIT_COLOR);
+                } else {
+                    isColorData = new Pair<>(title,
+                            EditNoteActivity.VIEW_NAME_EDIT_COLOR);
+                }
+
+                if (note.getIsCheckBoxOrContent() == 1) {
+                    isContentOrCheckbox = new Pair<>(mainCheckboxNoteHome,
+                            EditNoteActivity.VIEW_NAME_LIST_CHECKBOX);
+                } else {
+                    isContentOrCheckbox = new Pair<>(content,
+                            EditNoteActivity.VIEW_NAME_CONTENT);
+                }
+
+                @SuppressWarnings("unchecked")
+                ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        getActivity(),
+                        new Pair<>(imageView,
+                                EditNoteActivity.VIEW_NAME_IMAGE),
+                        new Pair<>(title,
+                                EditNoteActivity.VIEW_NAME_TITLE),
+                        isContentOrCheckbox,
+                        isColorData,
+                        new Pair<>(mainCategoriesNoteHome,
+                                EditNoteActivity.VIEW_NAME_LABEL));
+                ActivityCompat.startActivity(view.getContext(), intent, activityOptions.toBundle());
             }
         });
         adapter.setData(getListNotes());

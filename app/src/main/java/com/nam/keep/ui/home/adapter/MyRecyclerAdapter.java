@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,7 +38,6 @@ import butterknife.Unbinder;
 public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.MyViewHolder> implements ItemTouchHelperAdapter {
 
     Context context;
-    private Activity activity;
     OnStartDangListener listener;
     private ArrayList<Note> notesList;
     DatabaseHelper dataSource;
@@ -73,9 +73,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final Note noteItem = notesList.get(position);
 
-        RecyclerImagesNoteAdapter adapter = new RecyclerImagesNoteAdapter(getListImages(noteItem.getId()),view -> {
-            iClickItemDetail.onClickItemNote(view ,noteItem);
-        });
+        RecyclerImagesNoteAdapter adapter = new RecyclerImagesNoteAdapter(getListImages(noteItem.getId()));
         holder.mainImagesNoteHome.setAdapter(adapter);
 
         if (noteItem.getBackground() != null){
@@ -99,17 +97,27 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
             holder.colorBackgroundImagedHome.setVisibility(View.GONE);
         }
 
-        holder.linearLayout.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 listener.onStartDrag(holder);
                 return false;
             }
         });
-        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                iClickItemDetail.onClickItemNote(view ,noteItem);
+                iClickItemDetail.onClickItemNote(
+                        view,
+                        holder.title,
+                        holder.content,
+                        holder.imageView,
+                        holder.mainImagesNoteHome,
+                        holder.mainCheckboxNoteHome,
+                        holder.mainCategoriesNoteHome,
+                        holder.colorBackgroundImagedHome,
+                        holder.imageBackgroundHome,
+                        noteItem);
             }
         });
 
@@ -191,7 +199,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView title, content;
-        LinearLayout linearLayout;
+        ImageView imageView;
         RecyclerView mainImagesNoteHome, mainCheckboxNoteHome, mainCategoriesNoteHome;
         RoundedImageView colorBackgroundImagedHome, imageBackgroundHome;
 
@@ -202,7 +210,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
             unbinder = ButterKnife.bind(this, itemView);
             title = itemView.findViewById(R.id.title_note_home);
             content = itemView.findViewById(R.id.content_note_home);
-            linearLayout = itemView.findViewById(R.id.layout_item);
+            imageView = itemView.findViewById(R.id.layout_item);
             mainImagesNoteHome = itemView.findViewById(R.id.main_images_note_home);
             colorBackgroundImagedHome = itemView.findViewById(R.id.color_background_image_home);
             imageBackgroundHome = itemView.findViewById(R.id.image_background_home);

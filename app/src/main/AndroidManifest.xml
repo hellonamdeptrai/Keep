@@ -46,6 +46,9 @@
             android:name=".ui.note.AddNoteActivity"
             android:parentActivityName=".MainActivity" />
         <receiver android:name=".notification.AlarmReceiver" />
+        <activity
+            android:name=".ui.note.EditNoteActivity"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>
