@@ -10,4 +10,8 @@
     <dimen name="drawable_padding">24dp</dimen>
     <dimen name="text_size">16sp</dimen>
     <dimen name="normal_padding">16dp</dimen>
+
+    <dimen name="margin_label">18dp</dimen>
+    <dimen name="padding_add_label">8dp</dimen>
+    <dimen name="text_size_label">18dp</dimen>
 </resources>

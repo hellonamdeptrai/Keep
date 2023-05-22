@@ -47,4 +47,7 @@
     <string name="menu_home">Ghi chú</string>
     <string name="menu_reminder">Lời nhắc</string>
     <string name="menu_label">Nhãn</string>
+    <string name="menu_setting">Cài đặt</string>
+
+    <string name="edit_text_add_label">Tạo nhãn mới</string>
 </resources>

@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.nam.keep.model.FileModel;
+import com.nam.keep.model.Label;
 import com.nam.keep.model.Note;
 import com.nam.keep.model.User;
 import com.nam.keep.utils.UtilsFunction;
@@ -210,6 +211,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DataBaseContract.ImageEntry.COLUMN_PATH, file.getPath());
         values.put(DataBaseContract.ImageEntry.COLUMN_NOTE_ID, file.getIdNote());
         long insertId = database.insert(DataBaseContract.ImageEntry.TABLE, null, values);
+        if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void createLabel(Label label) {
+        database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.LabelEntry.COLUMN_TITLE, label.getTitle());
+        long insertId = database.insert(DataBaseContract.LabelEntry.TABLE, null, values);
+        if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public Cursor getLabel(){
+        String query = "SELECT * FROM " + DataBaseContract.LabelEntry.TABLE + " ORDER BY _id DESC";
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+    public void updateLabel(Label label){
+        database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(DataBaseContract.LabelEntry.COLUMN_TITLE, label.getTitle());
+
+        long insertId = database.update(DataBaseContract.LabelEntry.TABLE, values, "_id=?", new String[]{label.getId()+""});
+        if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void deleteLabel(Label label){
+        database = this.getWritableDatabase();
+        long insertId = database.delete(DataBaseContract.LabelEntry.TABLE, "_id=?", new String[]{label.getId()+""});
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
         }else {
