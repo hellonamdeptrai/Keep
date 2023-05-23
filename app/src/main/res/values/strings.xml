@@ -50,4 +50,5 @@
     <string name="menu_setting">Cài đặt</string>
 
     <string name="edit_text_add_label">Tạo nhãn mới</string>
+    <string name="edit_text_search_label">Nhập tên nhãn</string>
 </resources>

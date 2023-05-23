@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.R;
+import com.nam.keep.model.Label;
 import com.nam.keep.ui.note.adapter.RecyclerCheckBoxNoteHomeAdapter;
 import com.nam.keep.ui.note.adapter.RecyclerImagesNoteAdapter;
 import com.nam.keep.database.DatabaseHelper;
@@ -28,6 +29,7 @@ import com.nam.keep.model.Note;
 import com.nam.keep.ui.home.helper.IClickItemDetail;
 import com.nam.keep.ui.home.helper.ItemTouchHelperAdapter;
 import com.nam.keep.ui.home.helper.OnStartDangListener;
+import com.nam.keep.ui.note.adapter.RecyclerLabelNoteAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +66,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
         MyViewHolder viewHolder = new MyViewHolder(itemView);
 
         viewHolder.mainImagesNoteHome.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
-
+        viewHolder.mainCategoriesNoteHome.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
 
         return viewHolder;
     }
@@ -75,6 +77,9 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
 
         RecyclerImagesNoteAdapter adapter = new RecyclerImagesNoteAdapter(getListImages(noteItem.getId()));
         holder.mainImagesNoteHome.setAdapter(adapter);
+
+        RecyclerLabelNoteAdapter adapter1 = new RecyclerLabelNoteAdapter(getListLabel(noteItem.getId()));
+        holder.mainCategoriesNoteHome.setAdapter(adapter1);
 
         if (noteItem.getBackground() != null){
             byte[] blob = noteItem.getBackground();
@@ -127,10 +132,6 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
             RecyclerCheckBoxNoteHomeAdapter adapterCheckbox = new RecyclerCheckBoxNoteHomeAdapter(getListCheckBox(noteItem.getContent()));
             holder.mainCheckboxNoteHome.setAdapter(adapterCheckbox);
         }
-//
-//        holder.mainCategoriesNoteHome.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
-//        RecyclerLabelNoteAdapter adapter1 = new RecyclerLabelNoteAdapter(getListLabel(noteItem.getId()));
-//        holder.mainCategoriesNoteHome.setAdapter(adapter1);
     }
 
     @Override
@@ -154,20 +155,20 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
         notifyItemRemoved(position);
     }
 
-//    private List<Label> getListLabel(int idNote) {
-//        List<Label> listLabelNote = new ArrayList<>();
-//        Cursor cursor = myDB.readNoteLabel(idNote);
-//        if(cursor.getCount() != 0){
-//            while (cursor.moveToNext()){
-//                listLabelNote.add(new Label(Integer.parseInt(cursor.getString(0))
-//                        ,cursor.getString(1)
-//                        ,Integer.parseInt(cursor.getString(2) != null ? cursor.getString(2) : "0")
-//                ));
-//            }
-//        }
-//        return listLabelNote;
-//    }
-//
+    private List<Label> getListLabel(long idNote) {
+        List<Label> listLabelNote = new ArrayList<>();
+        Cursor cursor = dataSource.getLabelNote(idNote);
+        if(cursor.getCount() != 0){
+            while (cursor.moveToNext()){
+                listLabelNote.add(new Label(
+                        Long.parseLong(cursor.getString(0))
+                        ,cursor.getString(1)
+                ));
+            }
+        }
+        return listLabelNote;
+    }
+
     private List<CheckBoxContentNote> getListCheckBox(String data) {
         List<CheckBoxContentNote> list = new ArrayList<>();
         String[] arr = data.split("\n");

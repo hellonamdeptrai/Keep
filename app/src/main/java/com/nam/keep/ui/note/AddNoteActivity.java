@@ -33,6 +33,9 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.R;
+import com.nam.keep.model.Label;
+import com.nam.keep.ui.label.LabelActivity;
+import com.nam.keep.ui.note.adapter.RecyclerLabelNoteAdapter;
 import com.nam.keep.ui.note.helper.IClickChecked;
 import com.nam.keep.ui.note.helper.IClickDeleteCheckBox;
 import com.nam.keep.ui.note.helper.ITextWatcherCheckBox;
@@ -79,6 +82,7 @@ public class AddNoteActivity extends AppCompatActivity {
     private int isCheckBoxOrContent = 0;
     ItemTouchHelper itemTouchHelper;
     MediaRecorder mediaRecorder;
+    ArrayList<Label> listLabelNote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,6 +185,15 @@ public class AddNoteActivity extends AppCompatActivity {
                 BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(AddNoteActivity.this);
                 bottomSheetDialog.setContentView(R.layout.layout_bottom_sheet_three_dots_note);
                 bottomSheetDialog.show();
+                bottomSheetDialog.findViewById(R.id.add_label_note).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        bottomSheetDialog.dismiss();
+                        Intent intent = new Intent(AddNoteActivity.this, LabelActivity.class);
+                        intent.putExtra("labelListEditIntent", listLabelNote);
+                        startActivityForResult(intent, 14);
+                    }
+                });
             }
         });
     }
@@ -213,6 +226,15 @@ public class AddNoteActivity extends AppCompatActivity {
                     RecognizerIntent.EXTRA_RESULTS);
             str = mContent.getText().toString() + Objects.requireNonNull(result).get(0);
             mContent.setText(str);
+        }
+        if (requestCode == 14 && resultCode == RESULT_OK) {
+            if (data != null && data.hasExtra("labelListIntent")) {
+                listLabelNote = data.getParcelableArrayListExtra("labelListIntent");
+                RecyclerView recyclerViewLabelNote = findViewById(R.id.main_categories_note);
+                recyclerViewLabelNote.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
+                RecyclerLabelNoteAdapter adapter1 = new RecyclerLabelNoteAdapter(listLabelNote);
+                recyclerViewLabelNote.setAdapter(adapter1);
+            }
         }
     }
 
@@ -585,14 +607,9 @@ public class AddNoteActivity extends AppCompatActivity {
                 }
                 dataSource.createImage(fileModel);
             }
-
-//            int idNewNote = myDB.getNoteIdNew();
-//            for (Bitmap bitmap : listBitmap) {
-//                myDB.addImage(bitmap, idNewNote);
-//            }
-//            for (Label label: listLabelNote) {
-//                myDB.updateLabelIdNote(label.getId()+"", idNewNote);
-//            }
+            for (Label label: listLabelNote) {
+                dataSource.attachLabel(idNewNote, label.getId());
+            }
             dataSource.close();
             setResult(RESULT_OK);
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.nam.keep" >
+    package="com.nam.keep">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -20,7 +20,10 @@
         android:roundIcon="@drawable/ic_baseline_lightbulb_circle_24"
         android:supportsRtl="true"
         android:theme="@style/Theme.Keep"
-        tools:targetApi="31" >
+        tools:targetApi="31">
+        <activity
+            android:name=".ui.label.LabelActivity"
+            android:exported="false"/>
         <activity
             android:name=".ui.paint.PaintActivity"
             android:exported="false" />
@@ -35,7 +38,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.Keep.NoActionBar" >
+            android:theme="@style/Theme.Keep.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,7 +48,9 @@
         <activity
             android:name=".ui.note.AddNoteActivity"
             android:parentActivityName=".MainActivity" />
+
         <receiver android:name=".notification.AlarmReceiver" />
+
         <activity
             android:name=".ui.note.EditNoteActivity"
             android:parentActivityName=".MainActivity" />

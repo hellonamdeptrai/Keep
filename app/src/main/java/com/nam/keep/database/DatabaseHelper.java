@@ -264,4 +264,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public void attachLabel(long idNote, long idLabel){
+        database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.NoteHasLabelEntry.COLUMN_NOTE_ID, idNote);
+        values.put(DataBaseContract.NoteHasLabelEntry.COLUMN_LABEL_ID, idLabel);
+        long insertId = database.insert(DataBaseContract.NoteHasLabelEntry.TABLE, null, values);
+        if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public Cursor getLabelNote(long idNote){
+        String query = "SELECT " + DataBaseContract.LabelEntry.TABLE + ".* FROM " + DataBaseContract.NoteHasLabelEntry.TABLE +
+        " JOIN " + DataBaseContract.LabelEntry.TABLE + " ON " +
+                DataBaseContract.LabelEntry.TABLE +"." +DataBaseContract.LabelEntry.COLUMN_ID + " = " +
+                DataBaseContract.NoteHasLabelEntry.TABLE + "." + DataBaseContract.NoteHasLabelEntry.COLUMN_LABEL_ID +
+                " WHERE " + DataBaseContract.NoteHasLabelEntry.TABLE +"." +DataBaseContract.NoteHasLabelEntry.COLUMN_NOTE_ID + " = " +
+                idNote;
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
 }
