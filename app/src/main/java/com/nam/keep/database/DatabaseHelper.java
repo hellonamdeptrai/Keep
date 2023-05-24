@@ -218,6 +218,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void createFile(FileModel file) {
+        database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.FileEntry.COLUMN_PATH, file.getPath());
+        values.put(DataBaseContract.FileEntry.COLUMN_NOTE_ID, file.getIdNote());
+        long insertId = database.insert(DataBaseContract.FileEntry.TABLE, null, values);
+        if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public Cursor getFileNote(long idNote){
+        String query = "SELECT * FROM " + DataBaseContract.FileEntry.TABLE + " WHERE " +
+                DataBaseContract.FileEntry.COLUMN_NOTE_ID + " = " + idNote;
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
     public void createLabel(Label label) {
         database = this.getWritableDatabase();
         ContentValues values = new ContentValues();

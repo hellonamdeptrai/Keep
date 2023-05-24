@@ -81,6 +81,10 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
         RecyclerLabelNoteAdapter adapter1 = new RecyclerLabelNoteAdapter(getListLabel(noteItem.getId()));
         holder.mainCategoriesNoteHome.setAdapter(adapter1);
 
+        if (getRecorder(noteItem.getId())) {
+            holder.iconRecorderHome.setVisibility(View.VISIBLE);
+        }
+
         if (noteItem.getBackground() != null){
             byte[] blob = noteItem.getBackground();
             Bitmap bitmap = null;
@@ -198,9 +202,20 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
         return list;
     }
 
+    private boolean getRecorder(long idNote) {
+        boolean isRecorder = false;
+
+        Cursor cursor = dataSource.getFileNote(idNote);
+        if(cursor.getCount() != 0 ){
+            isRecorder = true;
+        }
+
+        return isRecorder;
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView title, content;
-        ImageView imageView;
+        ImageView imageView, iconRecorderHome;
         RecyclerView mainImagesNoteHome, mainCheckboxNoteHome, mainCategoriesNoteHome;
         RoundedImageView colorBackgroundImagedHome, imageBackgroundHome;
 
@@ -217,6 +232,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
             imageBackgroundHome = itemView.findViewById(R.id.image_background_home);
             mainCheckboxNoteHome = itemView.findViewById(R.id.main_checkbox_note_home);
             mainCategoriesNoteHome = itemView.findViewById(R.id.main_categories_note_home);
+            iconRecorderHome = itemView.findViewById(R.id.icon_recorder_home);
         }
     }
 }

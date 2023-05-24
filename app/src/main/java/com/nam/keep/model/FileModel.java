@@ -8,6 +8,12 @@ public class FileModel {
     public FileModel() {
     }
 
+    public FileModel(String path, long idNote) {
+        this.name = name;
+        this.path = path;
+        this.idNote = idNote;
+    }
+
     public FileModel(String name, String path, long idNote) {
         this.name = name;
         this.path = path;

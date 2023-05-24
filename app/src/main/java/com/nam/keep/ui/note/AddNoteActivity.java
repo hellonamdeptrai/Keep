@@ -36,8 +36,10 @@ import com.nam.keep.R;
 import com.nam.keep.model.Label;
 import com.nam.keep.ui.label.LabelActivity;
 import com.nam.keep.ui.note.adapter.RecyclerLabelNoteAdapter;
+import com.nam.keep.ui.note.adapter.RecyclerRecorderNoteAdapter;
 import com.nam.keep.ui.note.helper.IClickChecked;
 import com.nam.keep.ui.note.helper.IClickDeleteCheckBox;
+import com.nam.keep.ui.note.helper.IClickRecorder;
 import com.nam.keep.ui.note.helper.ITextWatcherCheckBox;
 import com.nam.keep.ui.note.adapter.RecyclerCheckBoxNoteAdapter;
 import com.nam.keep.ui.note.adapter.RecyclerImagesAddNoteAdapter;
@@ -72,6 +74,7 @@ public class AddNoteActivity extends AppCompatActivity {
     private CoordinatorLayout mMainAddNote;
     private RoundedImageView mRoundedImageColor;
     private Button addCheckBox;
+    RecyclerView mainRecorderNote;
 
     // Data
     private DatabaseHelper dataSource;
@@ -82,7 +85,8 @@ public class AddNoteActivity extends AppCompatActivity {
     private int isCheckBoxOrContent = 0;
     ItemTouchHelper itemTouchHelper;
     MediaRecorder mediaRecorder;
-    ArrayList<Label> listLabelNote;
+    ArrayList<Label> listLabelNote = new ArrayList<>();
+    ArrayList<String> listPathRecorder = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +104,10 @@ public class AddNoteActivity extends AppCompatActivity {
         mContent = findViewById(R.id.content_note);
         mMainAddNote = findViewById(R.id.main_container_add_note);
         mRoundedImageColor = findViewById(R.id.color_background_imaged);
+
+        // recorder view
+        mainRecorderNote = findViewById(R.id.main_recorder_note);
+        mainRecorderNote.setLayoutManager(new LinearLayoutManager(AddNoteActivity.this));
 
         Button mSheetAddButton = findViewById(R.id.sheet_add_note_button);
         Button mSheetColorButton = findViewById(R.id.sheet_color_note_button);
@@ -253,6 +261,8 @@ public class AddNoteActivity extends AppCompatActivity {
         String filePath = file.getAbsolutePath();
         mediaRecorder.setOutputFile(filePath);
 
+        listPathRecorder.add(filePath);
+
         try {
             mediaRecorder.prepare();
             mediaRecorder.start();
@@ -267,7 +277,27 @@ public class AddNoteActivity extends AppCompatActivity {
             mediaRecorder.stop();
             mediaRecorder.release();
             mediaRecorder = null;
+            listViewRecording();
         }
+    }
+
+    private void listViewRecording() {
+
+        RecyclerRecorderNoteAdapter adapter = new RecyclerRecorderNoteAdapter(AddNoteActivity.this, listPathRecorder, new IClickRecorder() {
+            @Override
+            public void onClickDelete(int position) {
+                File fileToDelete = new File(listPathRecorder.get(position));
+                boolean deleted = fileToDelete.delete();
+                if (deleted) {
+                    listPathRecorder.remove(position);
+                    listViewRecording();
+                    Toast.makeText(AddNoteActivity.this, "Xóa bản ghi âm thành công", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(AddNoteActivity.this, "Lỗi xóa bản ghi âm", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        mainRecorderNote.setAdapter(adapter);
     }
 
     private void startSpeechRecognition() {
@@ -591,6 +621,13 @@ public class AddNoteActivity extends AppCompatActivity {
             ));
 
             long idNewNote = dataSource.getNoteIdNew();
+
+            for (String pathFile : listPathRecorder) {
+                dataSource.createFile(new FileModel(
+                        pathFile,
+                        idNewNote
+                ));
+            }
 
             for (Uri uri : listImageIntent) {
                 FileModel fileModel = new FileModel();
