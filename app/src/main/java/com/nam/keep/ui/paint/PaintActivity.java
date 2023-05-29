@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.slider.RangeSlider;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -66,13 +67,20 @@ public class PaintActivity extends AppCompatActivity {
 
                 OutputStream imageOutStream = null;
 
+                File picturesDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                if (!picturesDirectory.exists()) {
+                    picturesDirectory.mkdirs();
+                }
+
                 ContentValues cv = new ContentValues();
 
-                cv.put(MediaStore.Images.Media.DISPLAY_NAME, new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date()) + "drawing.png");
+//                cv.put(MediaStore.Images.Media.DISPLAY_NAME, new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date()) + "drawing.png");
 
                 cv.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+                String absolutePath = "/storage/emulated/0/Pictures/";
+                cv.put(MediaStore.Images.Media.DATA, absolutePath + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date()) + "drawing.png");
 
-                cv.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+//                cv.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
 
                 Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
 
