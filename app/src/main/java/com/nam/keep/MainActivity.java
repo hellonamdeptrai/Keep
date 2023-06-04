@@ -1,10 +1,6 @@
 package com.nam.keep;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +16,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.nam.keep.databinding.ActivityMainBinding;
-import com.nam.keep.notification.AlarmReceiver;
+import com.nam.keep.notification.NotificationHelper;
 import com.nam.keep.ui.login.LoginActivity;
 import com.nam.keep.ui.note.AddNoteActivity;
 
@@ -58,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        scheduleNotification();
+        NotificationHelper.showNotification(this, "haha", "hehehehe");
     }
 
     @Override
@@ -85,26 +81,4 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
-    private void scheduleNotification() {
-        // Tạo PendingIntent để gửi đến BroadcastReceiver
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-
-        // Lấy đối tượng AlarmManager
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        // Tính toán thời gian kích hoạt báo động (ví dụ: sau 10 giây)
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.SECOND, 3);
-        long triggerTime = calendar.getTimeInMillis();
-
-        // Đặt báo động
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
-        } else {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent);
-        }
-    }
 }

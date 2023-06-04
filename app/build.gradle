@@ -61,4 +61,7 @@ dependencies {
 
     // signature view
     implementation 'petrov.kristiyan:colorpicker-library:1.1.10'
+
+    // Notification
+    implementation 'androidx.work:work-runtime:2.8.1'
 }
