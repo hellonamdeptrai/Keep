@@ -107,8 +107,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long insertId = database.insert(DataBaseContract.UserEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -157,8 +155,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long insertId = database.insert(DataBaseContract.NoteEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void updateNote(Note note){
+        database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.NoteEntry.COLUMN_INDEX, note.getIndex());
+        values.put(DataBaseContract.NoteEntry.COLUMN_TITLE, note.getTitle());
+        values.put(DataBaseContract.NoteEntry.COLUMN_CONTENT, note.getContent());
+        values.put(DataBaseContract.NoteEntry.COLUMN_IS_CHECKBOX_OR_CONTENT, note.getIsCheckBoxOrContent());
+        values.put(DataBaseContract.NoteEntry.COLUMN_DEADLINE, note.getDeadline());
+        values.put(DataBaseContract.NoteEntry.COLUMN_COLOR, note.getColor());
+        values.put(DataBaseContract.NoteEntry.COLUMN_BACKGROUND, note.getBackground());
+        values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdatedAt());
+        long insertId = database.update(DataBaseContract.NoteEntry.TABLE, values, DataBaseContract.NoteEntry.COLUMN_ID+
+                "=?", new String[]{note.getId()+""});
+        if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void deleteNote(long idNote){
+        database = this.getWritableDatabase();
+        long result = database.delete(DataBaseContract.NoteEntry.TABLE,
+                DataBaseContract.NoteEntry.COLUMN_ID+"=?", new String[]{idNote+""});
+        if(result == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -194,6 +217,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return id;
     }
 
+    public Cursor getNoteDetail(long id){
+        String query = "SELECT * FROM " + DataBaseContract.NoteEntry.TABLE + " WHERE " +
+                DataBaseContract.NoteEntry.COLUMN_ID + " = " + id;
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
     public Cursor readNoteImage(long idNote){
         String query = "SELECT * FROM " + DataBaseContract.ImageEntry.TABLE + " WHERE _note_id = " + idNote;
         database = this.getReadableDatabase();
@@ -213,8 +248,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long insertId = database.insert(DataBaseContract.ImageEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void deleteImageInNote(long idNote){
+        database = this.getWritableDatabase();
+        long result = database.delete(DataBaseContract.ImageEntry.TABLE,
+                DataBaseContract.ImageEntry.COLUMN_NOTE_ID+"=?", new String[]{idNote+""});
+        if(result == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -226,8 +268,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long insertId = database.insert(DataBaseContract.FileEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void deleteFileInNote(long idNote){
+        database = this.getWritableDatabase();
+        long result = database.delete(DataBaseContract.FileEntry.TABLE,
+                DataBaseContract.FileEntry.COLUMN_NOTE_ID+"=?", new String[]{idNote+""});
+        if(result == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -250,8 +299,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long insertId = database.insert(DataBaseContract.LabelEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -275,8 +322,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long insertId = database.update(DataBaseContract.LabelEntry.TABLE, values, "_id=?", new String[]{label.getId()+""});
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -285,8 +330,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long insertId = database.delete(DataBaseContract.LabelEntry.TABLE, "_id=?", new String[]{label.getId()+""});
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -298,8 +341,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long insertId = database.insert(DataBaseContract.NoteHasLabelEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(context, "Added Successfully!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void detachLabel(long idNote){
+        database = this.getWritableDatabase();
+        long result = database.delete(DataBaseContract.NoteHasLabelEntry.TABLE,
+                DataBaseContract.NoteHasLabelEntry.COLUMN_NOTE_ID+"=?", new String[]{idNote+""});
+        if(result == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -29,6 +29,18 @@ public class Note {
         this.userId = userId;
     }
 
+    public Note(long id, int index, String title, String content, int isCheckBoxOrContent, String deadline, int color, byte[] background, String updatedAt) {
+        this.id = id;
+        this.index = index;
+        this.title = title;
+        this.content = content;
+        this.isCheckBoxOrContent = isCheckBoxOrContent;
+        this.deadline = deadline;
+        this.color = color;
+        this.background = background;
+        this.updatedAt = updatedAt;
+    }
+
     public Note(long id, int index, String title, String content, int isCheckBoxOrContent, String deadline, int color, byte[] background, String updatedAt, long userId) {
         this.id = id;
         this.index = index;

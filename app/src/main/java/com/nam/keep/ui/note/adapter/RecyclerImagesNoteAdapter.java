@@ -35,6 +35,7 @@ public class RecyclerImagesNoteAdapter extends RecyclerView.Adapter<RecyclerImag
                 .load(imagePath)
                 .override(200,300)
                 .centerCrop()
+                .fitCenter()
                 .into(holder.imageView);
     }
 

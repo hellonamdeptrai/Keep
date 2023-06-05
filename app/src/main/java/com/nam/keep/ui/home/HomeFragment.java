@@ -37,6 +37,7 @@ import com.nam.keep.ui.note.AddNoteActivity;
 import com.nam.keep.ui.note.EditNoteActivity;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
@@ -102,11 +103,6 @@ public class HomeFragment extends Fragment {
                                         RoundedImageView imageBackgroundHome, Note note) {
                 Intent intent = new Intent(view.getContext(), EditNoteActivity.class);
                 intent.putExtra(EditNoteActivity.EXTRA_PARAM_ID, note.getId());
-                intent.putExtra(EditNoteActivity.VIEW_NAME_TITLE, note.getTitle());
-                intent.putExtra(EditNoteActivity.VIEW_NAME_CONTENT, note.getContent());
-                intent.putExtra(EditNoteActivity.VIEW_NAME_IS_CHECKBOX, note.getIsCheckBoxOrContent());
-                intent.putExtra(EditNoteActivity.VIEW_NAME_BACKGROUND, note.getBackground());
-                intent.putExtra(EditNoteActivity.VIEW_NAME_EDIT_COLOR, note.getColor());
 
                 Pair isColorData, isContentOrCheckbox;
                 if (note.getColor() != Color.rgb(255,255,255)) {
@@ -127,7 +123,7 @@ public class HomeFragment extends Fragment {
 
                 @SuppressWarnings("unchecked")
                 ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        getActivity(),
+                        requireActivity(),
                         new Pair<>(imageView,
                                 EditNoteActivity.VIEW_NAME_IMAGE),
                         new Pair<>(title,
@@ -136,7 +132,8 @@ public class HomeFragment extends Fragment {
                         isColorData,
                         new Pair<>(mainCategoriesNoteHome,
                                 EditNoteActivity.VIEW_NAME_LABEL));
-                ActivityCompat.startActivity(view.getContext(), intent, activityOptions.toBundle());
+                startActivityForResult(intent,0);
+//                ActivityCompat.startActivityForResult(requireActivity(), intent, 0, activityOptions.toBundle());
             }
         });
         adapter.setData(getListNotes());
