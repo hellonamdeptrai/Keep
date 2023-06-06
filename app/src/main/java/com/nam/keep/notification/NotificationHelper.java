@@ -28,6 +28,10 @@ public class NotificationHelper {
 
     public static void showNotification(Context context, ArrayList<Note> note) {
         createNotificationChannel(context);
+        WorkManager workManager = WorkManager.getInstance(context);
+
+        // Hủy tất cả các công việc thông báo cũ trước khi tạo công việc mới
+        workManager.cancelAllWorkByTag(WORK_TAG);
 
         // Lặp qua từng LocalDateTime trong danh sách và lên lịch công việc
         for (Note noteItem : note) {
@@ -47,8 +51,9 @@ public class NotificationHelper {
                         OneTimeWorkRequest notificationWorkRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
                                 .setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
                                 .setInputData(inputData)
+                                .addTag(WORK_TAG)
                                 .build();
-                        WorkManager.getInstance(context).enqueue(notificationWorkRequest);
+                        workManager.enqueue(notificationWorkRequest);
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();
