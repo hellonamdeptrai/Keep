@@ -7,6 +7,9 @@ import android.os.Build;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
+
+import com.nam.keep.model.Note;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,38 +26,33 @@ public class NotificationHelper {
     public static final String WORK_TAG = "notification_work";
     public static final int PERMISSION_REQUEST_CODE = 1001;
 
-    public static void showNotification(Context context, String title, String message) {
+    public static void showNotification(Context context, ArrayList<Note> note) {
         createNotificationChannel(context);
 
-        List<String> dateTimeList = new ArrayList<>();
-
-        // Thêm dữ liệu vào dateTimeList
-        dateTimeList.add("2023-05-31 15:04");
-        dateTimeList.add("2023-05-31 15:21");
-        dateTimeList.add("2023-05-31 15:03");
-
         // Lặp qua từng LocalDateTime trong danh sách và lên lịch công việc
-        for (String dateTimeString : dateTimeList) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-            try {
-                Date date = sdf.parse(dateTimeString);
-                long delayMillis = date.getTime() - System.currentTimeMillis();
+        for (Note noteItem : note) {
+            SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
+            if (!noteItem.getDeadline().isEmpty()) {
+                try {
+                    Date date = sdf.parse(noteItem.getDeadline());
+                    long delayMillis = date.getTime() - System.currentTimeMillis();
 
-                if (delayMillis > 0) {
-                    Data inputData = new Data.Builder()
-                            .putString("title", title)
-                            .putString("message", message)
-                            .putInt("notificationId", generateNotificationId()) // Truyền notificationId từ công việc
-                            .build();
+                    if (delayMillis > 0) {
+                        Data inputData = new Data.Builder()
+                                .putString("title", noteItem.getTitle())
+                                .putString("message", noteItem.getContent())
+                                .putInt("notificationId", generateNotificationId()) // Truyền notificationId từ công việc
+                                .build();
 
-                    OneTimeWorkRequest notificationWorkRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
-                            .setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
-                            .setInputData(inputData)
-                            .build();
-                    WorkManager.getInstance(context).enqueue(notificationWorkRequest);
+                        OneTimeWorkRequest notificationWorkRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                                .setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
+                                .setInputData(inputData)
+                                .build();
+                        WorkManager.getInstance(context).enqueue(notificationWorkRequest);
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-            } catch (ParseException e) {
-                e.printStackTrace();
             }
         }
     }

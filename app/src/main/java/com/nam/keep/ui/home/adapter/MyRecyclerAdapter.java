@@ -31,8 +31,12 @@ import com.nam.keep.ui.home.helper.ItemTouchHelperAdapter;
 import com.nam.keep.ui.home.helper.OnStartDangListener;
 import com.nam.keep.ui.note.adapter.RecyclerLabelNoteAdapter;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -99,6 +103,17 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
 
         holder.title.setText(noteItem.getTitle());
         holder.content.setText(noteItem.getContent());
+
+        if (!noteItem.getDeadline().isEmpty()) {
+            holder.layoutTextTimeHome.setVisibility(View.VISIBLE);
+            try {
+                Date dateTimePicker = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH).parse(noteItem.getDeadline());
+                assert dateTimePicker != null;
+                holder.textTimeHome.setText(new SimpleDateFormat("HH:mm dd/MM").format(dateTimePicker));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         if (noteItem.getColor() != Color.rgb(255,255,255)){
             holder.colorBackgroundImagedHome.setBackgroundColor(noteItem.getColor());
@@ -214,10 +229,11 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView title, content;
+        TextView title, content, textTimeHome;
         ImageView imageView, iconRecorderHome;
         RecyclerView mainImagesNoteHome, mainCheckboxNoteHome, mainCategoriesNoteHome;
         RoundedImageView colorBackgroundImagedHome, imageBackgroundHome;
+        LinearLayout layoutTextTimeHome;
 
         Unbinder unbinder;
         public MyViewHolder(@NonNull View itemView) {
@@ -233,6 +249,8 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
             mainCheckboxNoteHome = itemView.findViewById(R.id.main_checkbox_note_home);
             mainCategoriesNoteHome = itemView.findViewById(R.id.main_categories_note_home);
             iconRecorderHome = itemView.findViewById(R.id.icon_recorder_home);
+            textTimeHome = itemView.findViewById(R.id.text_time_home);
+            layoutTextTimeHome = itemView.findViewById(R.id.layout_text_time_home);
         }
     }
 }

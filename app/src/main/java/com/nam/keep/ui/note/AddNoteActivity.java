@@ -1,5 +1,6 @@
 package com.nam.keep.ui.note;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,10 +14,16 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,9 +39,11 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.nam.keep.MainActivity;
 import com.nam.keep.R;
 import com.nam.keep.model.Label;
 import com.nam.keep.ui.label.LabelActivity;
+import com.nam.keep.ui.login.LoginActivity;
 import com.nam.keep.ui.note.adapter.RecyclerLabelNoteAdapter;
 import com.nam.keep.ui.note.adapter.RecyclerRecorderNoteAdapter;
 import com.nam.keep.ui.note.helper.IClickChecked;
@@ -59,7 +68,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -74,7 +85,10 @@ public class AddNoteActivity extends AppCompatActivity {
     private CoordinatorLayout mMainAddNote;
     private RoundedImageView mRoundedImageColor;
     private Button addCheckBox;
-    RecyclerView mainRecorderNote;
+    private RecyclerView mainRecorderNote;
+    private LinearLayout layoutTextTimeNote;
+    private TextView textTimeNote;
+    private ImageView closeTextTimeNote;
 
     // Data
     private DatabaseHelper dataSource;
@@ -87,6 +101,7 @@ public class AddNoteActivity extends AppCompatActivity {
     MediaRecorder mediaRecorder;
     ArrayList<Label> listLabelNote = new ArrayList<>();
     ArrayList<String> listPathRecorder = new ArrayList<>();
+    Date dateTimePicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +119,9 @@ public class AddNoteActivity extends AppCompatActivity {
         mContent = findViewById(R.id.content_note);
         mMainAddNote = findViewById(R.id.main_container_add_note);
         mRoundedImageColor = findViewById(R.id.color_background_imaged);
+        layoutTextTimeNote = findViewById(R.id.layout_text_time_note);
+        textTimeNote = findViewById(R.id.text_time_note);
+        closeTextTimeNote = findViewById(R.id.close_text_time_note);
 
         // recorder view
         mainRecorderNote = findViewById(R.id.main_recorder_note);
@@ -204,12 +222,28 @@ public class AddNoteActivity extends AppCompatActivity {
                 });
             }
         });
+
+        closeTextTimeNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dateTimePicker = null;
+                layoutTextTimeNote.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.compose_note, menu);
+        MenuItem item = menu.findItem(R.id.notification_add);
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                showDateTimePicker();
+                return true;
+            }
+        });
         return true;
     }
 
@@ -244,6 +278,45 @@ public class AddNoteActivity extends AppCompatActivity {
                 recyclerViewLabelNote.setAdapter(adapter1);
             }
         }
+    }
+
+    private void showDateTimePicker() {
+        final View dialogView = View.inflate(AddNoteActivity.this, R.layout.date_time_picker, null);
+        final AlertDialog alertDialog = new AlertDialog.Builder(AddNoteActivity.this).create();
+
+        DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
+        TimePicker timePicker = (TimePicker) dialogView.findViewById(R.id.time_picker);
+        Button dateTimeSet = dialogView.findViewById(R.id.date_time_set);
+        dateTimeSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dateTimeSet.setText(R.string.button_set_picker);
+                datePicker.setVisibility(View.GONE);
+                if (timePicker.getVisibility() == View.VISIBLE) {
+                    Calendar calendar = new GregorianCalendar(
+                            datePicker.getYear(),
+                            datePicker.getMonth(),
+                            datePicker.getDayOfMonth(),
+                            timePicker.getCurrentHour(),
+                            timePicker.getCurrentMinute());
+                    dateTimePicker = calendar.getTime();
+
+                    layoutTextTimeNote.setVisibility(View.VISIBLE);
+                    textTimeNote.setText(new SimpleDateFormat("HH:mm dd/MM/yyyy").format(dateTimePicker));
+                    layoutTextTimeNote.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            showDateTimePicker();
+                        }
+                    });
+
+                    alertDialog.dismiss();
+                }
+                timePicker.setVisibility(View.VISIBLE);
+                timePicker.setIs24HourView(true);
+            }});
+        alertDialog.setView(dialogView);
+        alertDialog.show();
     }
 
     private void startRecording() {
@@ -613,7 +686,7 @@ public class AddNoteActivity extends AppCompatActivity {
                     mTitle.getText().toString(),
                     mContent.getText().toString(),
                     isCheckBoxOrContent,
-                    "aaa",
+                    dateTimePicker != null ? dateTimePicker.toString() : "",
                     colorNote,
                     imageBackground != null ? Objects.requireNonNull(byteArrayOutputStream).toByteArray() : null,
                     new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()),

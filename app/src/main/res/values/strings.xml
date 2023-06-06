@@ -51,4 +51,7 @@
 
     <string name="edit_text_add_label">Tạo nhãn mới</string>
     <string name="edit_text_search_label">Nhập tên nhãn</string>
+
+    <string name="button_continue_picker">Tiếp tục</string>
+    <string name="button_set_picker">Lưu</string>
 </resources>

@@ -58,16 +58,40 @@
             android:layout_marginBottom="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/main_checkbox_note" />
-        <LinearLayout
+        <com.google.android.flexbox.FlexboxLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible">
+            app:flexWrap="wrap"
+            app:alignItems="flex_start"
+            app:justifyContent="flex_start"
+            android:layout_marginBottom="5dp">
+            <LinearLayout
+                android:id="@+id/layout_text_time_home"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/background_label_radius"
+                android:paddingVertical="5dp"
+                android:paddingHorizontal="8dp"
+                android:visibility="gone">
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_baseline_access_alarm_24" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/text_time_home"
+                    android:textSize="12dp"
+                    android:layout_marginLeft="5dp"/>
+            </LinearLayout>
             <ImageView
                 android:id="@+id/icon_recorder_home"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginLeft="15dp"
-                android:layout_marginBottom="5dp"
                 android:src="@drawable/ic_baseline_play_circle_outline_24"
                 android:visibility="gone"/>
             <com.makeramen.roundedimageview.RoundedImageView
@@ -75,7 +99,6 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginLeft="15dp"
-                android:layout_marginBottom="5dp"
                 app:riv_mutate_background="true"
                 app:riv_corner_radius="30dp"
                 app:riv_border_color="@android:color/black"
@@ -89,7 +112,6 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginLeft="15dp"
-                android:layout_marginBottom="5dp"
                 app:riv_mutate_background="true"
                 app:riv_corner_radius="30dp"
                 app:riv_border_color="@android:color/black"
@@ -98,7 +120,7 @@
                 tools:ignore="MissingConstraints"
                 app:layout_constraintStart_toEndOf="@+id/main_categories_note_home"
                 app:layout_constraintTop_toBottomOf="@+id/main_checkbox_note_home"/>
-        </LinearLayout>
+        </com.google.android.flexbox.FlexboxLayout>
     </LinearLayout>
     <ImageView
         android:layout_width="match_parent"

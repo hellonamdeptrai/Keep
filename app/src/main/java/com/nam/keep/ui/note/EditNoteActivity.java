@@ -34,12 +34,17 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -82,9 +87,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -117,7 +125,11 @@ public class EditNoteActivity extends AppCompatActivity {
     private CoordinatorLayout mMainAddNote;
     private RoundedImageView mRoundedImageColor;
     private Button addCheckBox;
-    RecyclerView mainRecorderNote, mImageView, mMainCheckboxNote, mMainLabel;
+    private RecyclerView mainRecorderNote, mImageView, mMainCheckboxNote, mMainLabel;
+    private LinearLayout layoutTextTimeNote;
+    private TextView textTimeNote;
+    private ImageView closeTextTimeNote;
+
 
     // data
     long idNote;
@@ -132,6 +144,7 @@ public class EditNoteActivity extends AppCompatActivity {
     MediaRecorder mediaRecorder;
     ArrayList<Label> listLabelNote = new ArrayList<>();
     ArrayList<String> listPathRecorder = new ArrayList<>();
+    Date dateTimePicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +165,9 @@ public class EditNoteActivity extends AppCompatActivity {
         mMainCheckboxNote = findViewById(R.id.main_checkbox_note);
         mMainAddNote = findViewById(R.id.main_container_add_note);
         mMainLabel = findViewById(R.id.main_categories_note);
+        layoutTextTimeNote = findViewById(R.id.layout_text_time_note);
+        textTimeNote = findViewById(R.id.text_time_note);
+        closeTextTimeNote = findViewById(R.id.close_text_time_note);
 
         loadNote();
 
@@ -295,6 +311,14 @@ public class EditNoteActivity extends AppCompatActivity {
                 });
             }
         });
+
+        closeTextTimeNote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dateTimePicker = null;
+                layoutTextTimeNote.setVisibility(View.GONE);
+            }
+        });
     }
 
     private void loadNote() {
@@ -326,6 +350,16 @@ public class EditNoteActivity extends AppCompatActivity {
 
             colorNote = noteData.getColor();
 
+            if (!noteData.getDeadline().isEmpty()) {
+                try {
+                    dateTimePicker = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH).parse(noteData.getDeadline());
+                    layoutTextTimeNote.setVisibility(View.VISIBLE);
+                    textTimeNote.setText(new SimpleDateFormat("HH:mm dd/MM/yyyy").format(dateTimePicker));
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             if (noteData.getBackground() != null){
                 Bitmap bitmap = BitmapFactory.decodeByteArray(noteData.getBackground(),0,noteData.getBackground().length);
                 BitmapDrawable ob = new BitmapDrawable(getResources(), bitmap);
@@ -352,6 +386,14 @@ public class EditNoteActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.compose_note, menu);
+        MenuItem item = menu.findItem(R.id.notification_add);
+        item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                showDateTimePicker();
+                return true;
+            }
+        });
         return true;
     }
 
@@ -385,6 +427,45 @@ public class EditNoteActivity extends AppCompatActivity {
                 mMainLabel.setAdapter(adapter1);
             }
         }
+    }
+
+    private void showDateTimePicker() {
+        final View dialogView = View.inflate(EditNoteActivity.this, R.layout.date_time_picker, null);
+        final android.app.AlertDialog alertDialog = new android.app.AlertDialog.Builder(EditNoteActivity.this).create();
+
+        DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
+        TimePicker timePicker = (TimePicker) dialogView.findViewById(R.id.time_picker);
+        Button dateTimeSet = dialogView.findViewById(R.id.date_time_set);
+        dateTimeSet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dateTimeSet.setText(R.string.button_set_picker);
+                datePicker.setVisibility(View.GONE);
+                if (timePicker.getVisibility() == View.VISIBLE) {
+                    Calendar calendar = new GregorianCalendar(
+                            datePicker.getYear(),
+                            datePicker.getMonth(),
+                            datePicker.getDayOfMonth(),
+                            timePicker.getCurrentHour(),
+                            timePicker.getCurrentMinute());
+                    dateTimePicker = calendar.getTime();
+
+                    layoutTextTimeNote.setVisibility(View.VISIBLE);
+                    textTimeNote.setText(new SimpleDateFormat("HH:mm dd/MM/yyyy").format(dateTimePicker));
+                    layoutTextTimeNote.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            showDateTimePicker();
+                        }
+                    });
+
+                    alertDialog.dismiss();
+                }
+                timePicker.setVisibility(View.VISIBLE);
+                timePicker.setIs24HourView(true);
+            }});
+        alertDialog.setView(dialogView);
+        alertDialog.show();
     }
 
     private void getListRecorder() {
@@ -800,7 +881,7 @@ public class EditNoteActivity extends AppCompatActivity {
                     mTitle.getText().toString(),
                     mContent.getText().toString(),
                     isCheckBoxOrContent,
-                    "aaa",
+                    dateTimePicker != null ? dateTimePicker.toString() : "",
                     colorNote,
                     imageBackground != null ? Objects.requireNonNull(byteArrayOutputStream).toByteArray() : null,
                     new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date())

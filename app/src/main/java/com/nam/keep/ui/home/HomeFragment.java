@@ -30,6 +30,7 @@ import com.nam.keep.R;
 import com.nam.keep.database.DatabaseHelper;
 import com.nam.keep.databinding.FragmentHomeBinding;
 import com.nam.keep.model.Note;
+import com.nam.keep.notification.NotificationHelper;
 import com.nam.keep.ui.home.adapter.MyRecyclerAdapter;
 import com.nam.keep.ui.home.helper.IClickItemDetail;
 import com.nam.keep.ui.home.helper.MyItemTouchHelperCallback;
@@ -161,7 +162,7 @@ public class HomeFragment extends Fragment {
                 ));
             }
         }
-
+        NotificationHelper.showNotification(getActivity(), notes);
         return notes;
     }
 
