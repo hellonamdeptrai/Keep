@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -74,6 +76,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Stack;
 
 public class AddNoteActivity extends AppCompatActivity {
 
@@ -102,6 +105,9 @@ public class AddNoteActivity extends AppCompatActivity {
     ArrayList<Label> listLabelNote = new ArrayList<>();
     ArrayList<String> listPathRecorder = new ArrayList<>();
     Date dateTimePicker;
+    private Stack<CharSequence> undoStack;
+    private Stack<CharSequence> redoStack;
+    private boolean isUndoOrRedo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +136,12 @@ public class AddNoteActivity extends AppCompatActivity {
         Button mSheetAddButton = findViewById(R.id.sheet_add_note_button);
         Button mSheetColorButton = findViewById(R.id.sheet_color_note_button);
         Button mSheetThreeDotsNoteButton = findViewById(R.id.sheet_three_dots_note_button);
+        Button mUndoButton = findViewById(R.id.undo_note_button);
+        Button mRedoButton = findViewById(R.id.redo_note_button);
+
+        undoStack = new Stack<>();
+        redoStack = new Stack<>();
+        isUndoOrRedo = false;
 
         mSheetAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -230,6 +242,79 @@ public class AddNoteActivity extends AppCompatActivity {
                 layoutTextTimeNote.setVisibility(View.GONE);
             }
         });
+
+        mContent.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if (!isUndoOrRedo) {
+                    undoStack.push(s.toString());
+                    redoStack.clear();
+                }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        mUndoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                undo();
+            }
+        });
+
+        mRedoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                redo();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!undoStack.isEmpty()) {
+            undoStack.pop();
+        }
+
+        if (!undoStack.isEmpty()) {
+            CharSequence previousText = undoStack.peek();
+            isUndoOrRedo = true;
+            mContent.setText(previousText);
+            mContent.setSelection(previousText.length());
+            isUndoOrRedo = false;
+        }
+    }
+
+    private void undo() {
+        if (!undoStack.isEmpty()) {
+            CharSequence currentText = mContent.getText();
+            redoStack.push(currentText);
+
+            CharSequence previousText = undoStack.pop();
+            isUndoOrRedo = true;
+            mContent.setText(previousText);
+            mContent.setSelection(previousText.length());
+            isUndoOrRedo = false;
+        }
+    }
+
+    private void redo() {
+        if (!redoStack.isEmpty()) {
+            CharSequence currentText = mContent.getText();
+            undoStack.push(currentText);
+
+            CharSequence nextText = redoStack.pop();
+            isUndoOrRedo = true;
+            mContent.setText(nextText);
+            mContent.setSelection(nextText.length());
+            isUndoOrRedo = false;
+        }
     }
 
     @Override
