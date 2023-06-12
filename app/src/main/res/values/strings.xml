@@ -48,6 +48,7 @@
     <string name="menu_reminder">Lời nhắc</string>
     <string name="menu_label">Nhãn</string>
     <string name="menu_setting">Cài đặt</string>
+    <string name="title_menu_other">Khác</string>
 
     <string name="edit_text_add_label">Tạo nhãn mới</string>
     <string name="edit_text_search_label">Nhập tên nhãn</string>

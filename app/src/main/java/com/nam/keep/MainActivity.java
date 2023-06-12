@@ -8,6 +8,8 @@ import android.view.Menu;
 
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.NonNull;
+import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -19,6 +21,7 @@ import com.nam.keep.databinding.ActivityMainBinding;
 import com.nam.keep.notification.NotificationHelper;
 import com.nam.keep.ui.login.LoginActivity;
 import com.nam.keep.ui.note.AddNoteActivity;
+import com.nam.keep.ui.setting.SettingActivity;
 
 import java.util.Calendar;
 
@@ -52,7 +55,31 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
+//        NavigationUI.setupWithNavController(navigationView, navController);
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int itemId = item.getItemId();
+                if (itemId == R.id.nav_setting) {
+                    // Mở SettingActivity
+                    Intent intentSetting = new Intent(MainActivity.this, SettingActivity.class);
+                    startActivity(intentSetting);
+                } else if (itemId == R.id.nav_home) {
+                    // Mở HomeFragment
+                    navController.navigate(R.id.nav_home);
+                } else if (itemId == R.id.nav_reminder) {
+                    // Mở ReminderFragment
+                    navController.navigate(R.id.nav_reminder);
+                } else if (itemId == R.id.nav_label) {
+                    // Mở LabelFragment
+                    navController.navigate(R.id.nav_label);
+                }
+                // Đóng drawer sau khi chọn một mục
+                drawer.closeDrawer(GravityCompat.START);
+                return true;
+            }
+        });
     }
 
     @Override

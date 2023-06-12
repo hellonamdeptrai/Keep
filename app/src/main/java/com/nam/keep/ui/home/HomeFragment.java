@@ -27,9 +27,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.MainActivity;
 import com.nam.keep.R;
+import com.nam.keep.api.ApiClient;
 import com.nam.keep.database.DatabaseHelper;
 import com.nam.keep.databinding.FragmentHomeBinding;
 import com.nam.keep.model.Note;
+import com.nam.keep.model.User;
 import com.nam.keep.notification.NotificationHelper;
 import com.nam.keep.ui.home.adapter.MyRecyclerAdapter;
 import com.nam.keep.ui.home.helper.IClickItemDetail;
@@ -49,6 +51,7 @@ public class HomeFragment extends Fragment {
     MyRecyclerAdapter adapter;
     ItemTouchHelper itemTouchHelper;
     DatabaseHelper myDatabase;
+//    private ApiClient apiClient;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -167,6 +170,13 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadData() {
+//        apiClient = new ApiClient();
+//        apiClient.registerUser(new User(
+//                "aaaasdkf",
+//                "sffgs@sgfsrg.drgr",
+//                "123456",
+//                "123456"
+//        ));
         adapter.setData(getListNotes());
         recyclerView.setAdapter(adapter);
 

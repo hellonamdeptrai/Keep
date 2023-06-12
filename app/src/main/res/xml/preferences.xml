@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:title="Các tùy chọn hiển thị"
+        app:iconSpaceReserved="false">
+        <ListPreference
+            android:key="pref_key_theme_mode"
+            android:title="Giao diện"
+            android:summary="Chọn giao diện"
+            android:entries="@array/theme_entries"
+            android:entryValues="@array/theme_values"
+            android:defaultValue="auto"
+            app:iconSpaceReserved="false"/>
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Thông báo"
+        app:iconSpaceReserved="false">
+        <CheckBoxPreference
+            android:key="pref_key_enable_notifications"
+            android:title="Enable Notifications"
+            android:summary="Enable or disable push notifications"
+            android:defaultValue="true"
+            app:iconSpaceReserved="false"/>
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Đồng bộ"
+        app:iconSpaceReserved="false">
+        <Preference
+            android:key="pref_key_sync"
+            android:title="Đồng bộ hóa dữ liệu"
+            android:summary="Cho phép đồng bộ hóa tất cả dữ liệu trên tài khoản của bạn"
+            app:iconSpaceReserved="false"/>
+
+    </PreferenceCategory>
+</PreferenceScreen>
