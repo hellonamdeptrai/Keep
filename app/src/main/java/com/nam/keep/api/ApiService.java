@@ -1,5 +1,6 @@
 package com.nam.keep.api;
 
+import com.nam.keep.model.AllData;
 import com.nam.keep.model.User;
 
 import retrofit2.Call;
@@ -13,4 +14,6 @@ public interface ApiService {
     @POST("auth/register")
     Call<User> registerUser(@Body User user);
 
+    @GET("sync")
+    Call<AllData> getAllData();
 }

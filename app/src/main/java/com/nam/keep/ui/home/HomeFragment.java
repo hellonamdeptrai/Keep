@@ -51,7 +51,6 @@ public class HomeFragment extends Fragment {
     MyRecyclerAdapter adapter;
     ItemTouchHelper itemTouchHelper;
     DatabaseHelper myDatabase;
-//    private ApiClient apiClient;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -170,13 +169,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadData() {
-//        apiClient = new ApiClient();
-//        apiClient.registerUser(new User(
-//                "aaaasdkf",
-//                "sffgs@sgfsrg.drgr",
-//                "123456",
-//                "123456"
-//        ));
         adapter.setData(getListNotes());
         recyclerView.setAdapter(adapter);
 

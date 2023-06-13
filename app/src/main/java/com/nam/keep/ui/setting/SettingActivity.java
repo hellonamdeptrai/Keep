@@ -12,12 +12,22 @@ import androidx.preference.PreferenceManager;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.FrameLayout;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.nam.keep.R;
+import com.nam.keep.api.ApiClient;
+import com.nam.keep.database.DatabaseHelper;
+import com.nam.keep.model.User;
 import com.nam.keep.ui.note.EditNoteActivity;
 
 public class SettingActivity extends AppCompatActivity {
+
+    static LottieAnimationView lottieAnimationView;
+    static FrameLayout frameLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +39,9 @@ public class SettingActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Cài đặt");
 
+        lottieAnimationView = findViewById(R.id.animation_view);
+        frameLayout = findViewById(R.id.fragment_container);
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, new SettingsFragment())
                 .commit();
@@ -38,6 +51,9 @@ public class SettingActivity extends AppCompatActivity {
 
         private ListPreference themePreference;
         private Preference syncPreference;
+        private ApiClient apiClient;
+        DatabaseHelper myDatabase;
+
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -68,14 +84,22 @@ public class SettingActivity extends AppCompatActivity {
                     builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-
-//                            finish();
+                            apiClient = new ApiClient();
+                            apiClient.getAll(getContext(), lottieAnimationView, frameLayout);
                         }
                     });
                     builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
+                            myDatabase = new DatabaseHelper(getContext());
+                            Cursor cursor = myDatabase.getUser();
+                            if(cursor.getCount() != 0) {
+                                while (cursor.moveToNext()) {
+                                    System.out.println(cursor.getString(3));
 
+                                }
+
+                            }
                         }
                     });
                     AlertDialog alert = builder.create();
@@ -107,28 +131,5 @@ public class SettingActivity extends AppCompatActivity {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
             sharedPreferences.edit().putString("pref_key_theme_mode", selectedTheme).apply();
         }
-
-//        private void showDialog() {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(SettingActivity.this);
-//            builder.setTitle("Đồng bộ dữ liệu?");
-//            builder.setMessage("Bạn có chắc chắn muốn đồng bộ dữ liệu không?");
-//            builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialogInterface, int i) {
-//
-//                    finish();
-//                }
-//            });
-//            builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialogInterface, int i) {
-//
-//                }
-//            });
-//            AlertDialog alert = builder.create();
-//            alert.show();
-//            alert.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.nam_keep));
-//            alert.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.nam_keep));
-//        }
     }
 }

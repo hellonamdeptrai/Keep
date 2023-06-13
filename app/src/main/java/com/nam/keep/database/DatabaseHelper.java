@@ -17,12 +17,16 @@ import com.nam.keep.model.User;
 import com.nam.keep.utils.UtilsFunction;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private Context context;
     private SQLiteDatabase database;
     private static final String DATABASE_NAME = "NamKeep.db";
     private static final int DATABASE_VERSION = 1;
+//    private final String updatedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -37,7 +41,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 DataBaseContract.UserEntry.COLUMN_NAME + " TEXT, " +
                 DataBaseContract.UserEntry.COLUMN_AVATAR + " BLOB, " +
                 DataBaseContract.UserEntry.COLUMN_EMAIL + " TEXT, " +
-                DataBaseContract.UserEntry.COLUMN_PASSWORD + " TEXT );";
+                DataBaseContract.UserEntry.COLUMN_PASSWORD + " TEXT, " +
+                DataBaseContract.UserEntry.COLUMN_UPDATED_AT + " TIMESTAMP, " +
+                DataBaseContract.UserEntry.COLUMN_IS_SYNC + " INTEGER );";
         sqLiteDatabase.execSQL(queryUser);
 
         String queryNote = "CREATE TABLE " + DataBaseContract.NoteEntry.TABLE +
@@ -50,38 +56,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 DataBaseContract.NoteEntry.COLUMN_DEADLINE + " DATETIME, " +
                 DataBaseContract.NoteEntry.COLUMN_COLOR + " INTEGER, " +
                 DataBaseContract.NoteEntry.COLUMN_BACKGROUND + " BLOB, " +
-                DataBaseContract.NoteEntry.COLUMN_UPDATED_AT + " DATETIME, " +
-                DataBaseContract.NoteEntry.COLUMN_USER_ID + " INTEGER);";
+                DataBaseContract.NoteEntry.COLUMN_UPDATED_AT + " TIMESTAMP, " +
+                DataBaseContract.NoteEntry.COLUMN_IS_SYNC + " INTEGER );";
         sqLiteDatabase.execSQL(queryNote);
 
         String queryImage = "CREATE TABLE " + DataBaseContract.ImageEntry.TABLE +
                 " (" + DataBaseContract.ImageEntry.COLUMN_ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 DataBaseContract.ImageEntry.COLUMN_PATH + " TEXT, " +
-                DataBaseContract.ImageEntry.COLUMN_NOTE_ID + " INTEGER);";
+                DataBaseContract.ImageEntry.COLUMN_NOTE_ID + " INTEGER, " +
+                DataBaseContract.ImageEntry.COLUMN_UPDATED_AT + " TIMESTAMP, " +
+                DataBaseContract.ImageEntry.COLUMN_IS_SYNC + " INTEGER );";
         sqLiteDatabase.execSQL(queryImage);
 
         String queryFile = "CREATE TABLE " + DataBaseContract.FileEntry.TABLE +
                 " (" + DataBaseContract.FileEntry.COLUMN_ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 DataBaseContract.FileEntry.COLUMN_PATH + " TEXT, " +
-                DataBaseContract.FileEntry.COLUMN_NOTE_ID + " INTEGER);";
+                DataBaseContract.FileEntry.COLUMN_NOTE_ID + " INTEGER, " +
+                DataBaseContract.FileEntry.COLUMN_UPDATED_AT + " TIMESTAMP, " +
+                DataBaseContract.FileEntry.COLUMN_IS_SYNC + " INTEGER );";
         sqLiteDatabase.execSQL(queryFile);
 
         String queryLabel = "CREATE TABLE " + DataBaseContract.LabelEntry.TABLE +
                 " (" + DataBaseContract.LabelEntry.COLUMN_ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                DataBaseContract.LabelEntry.COLUMN_TITLE + " TEXT);";
+                DataBaseContract.LabelEntry.COLUMN_TITLE + " TEXT, " +
+                DataBaseContract.LabelEntry.COLUMN_UPDATED_AT + " , " +
+                DataBaseContract.LabelEntry.COLUMN_IS_SYNC + " INTEGER );";
         sqLiteDatabase.execSQL(queryLabel);
 
         String queryNoteHasLabel = "CREATE TABLE " + DataBaseContract.NoteHasLabelEntry.TABLE +
                 " (" + DataBaseContract.NoteHasLabelEntry.COLUMN_LABEL_ID + " INTEGER, " +
-                DataBaseContract.NoteHasLabelEntry.COLUMN_NOTE_ID + " INTEGER);";
+                DataBaseContract.NoteHasLabelEntry.COLUMN_NOTE_ID + " INTEGER, " +
+                DataBaseContract.NoteHasLabelEntry.COLUMN_UPDATED_AT + " TIMESTAMP, " +
+                DataBaseContract.NoteHasLabelEntry.COLUMN_IS_SYNC + " INTEGER );";
         sqLiteDatabase.execSQL(queryNoteHasLabel);
 
         String queryNoteHasUser = "CREATE TABLE " + DataBaseContract.NoteHasUserEntry.TABLE +
                 " (" + DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID + " INTEGER, " +
-                DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID + " INTEGER);";
+                DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID + " INTEGER, " +
+                DataBaseContract.NoteHasUserEntry.COLUMN_UPDATED_AT + " TIMESTAMP, " +
+                DataBaseContract.NoteHasUserEntry.COLUMN_IS_SYNC + " INTEGER );";
         sqLiteDatabase.execSQL(queryNoteHasUser);
     }
 
@@ -104,8 +120,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DataBaseContract.UserEntry.COLUMN_AVATAR, user.getAvatar());
         values.put(DataBaseContract.UserEntry.COLUMN_EMAIL, user.getEmail());
         values.put(DataBaseContract.UserEntry.COLUMN_PASSWORD, user.getPassword());
+        values.put(DataBaseContract.UserEntry.COLUMN_UPDATED_AT, user.getUpdated_at());
+        values.put(DataBaseContract.UserEntry.COLUMN_IS_SYNC, user.getIsSync());
         long insertId = database.insert(DataBaseContract.UserEntry.TABLE, null, values);
         if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public Cursor getUser() {
+        String query = "SELECT * FROM " + DataBaseContract.UserEntry.TABLE;
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+    public void deleteUser(long idUser){
+        database = this.getWritableDatabase();
+        long result = database.delete(DataBaseContract.UserEntry.TABLE,
+                DataBaseContract.UserEntry.COLUMN_ID+"=?", new String[]{idUser+""});
+        if(result == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void deleteUserSync(int isSync){
+        database = this.getWritableDatabase();
+        long result = database.delete(DataBaseContract.UserEntry.TABLE,
+                DataBaseContract.UserEntry.COLUMN_IS_SYNC+"=?", new String[]{isSync+""});
+        if(result == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
         }
     }
@@ -152,6 +199,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DataBaseContract.NoteEntry.COLUMN_BACKGROUND, note.getBackground());
         values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdatedAt());
         values.put(DataBaseContract.NoteEntry.COLUMN_USER_ID, note.getUserId());
+        values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdated_at());
         long insertId = database.insert(DataBaseContract.NoteEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
@@ -169,6 +217,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DataBaseContract.NoteEntry.COLUMN_COLOR, note.getColor());
         values.put(DataBaseContract.NoteEntry.COLUMN_BACKGROUND, note.getBackground());
         values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdatedAt());
+        values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdated_at());
         long insertId = database.update(DataBaseContract.NoteEntry.TABLE, values, DataBaseContract.NoteEntry.COLUMN_ID+
                 "=?", new String[]{note.getId()+""});
         if(insertId == -1){
@@ -245,6 +294,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(DataBaseContract.ImageEntry.COLUMN_PATH, file.getPath());
         values.put(DataBaseContract.ImageEntry.COLUMN_NOTE_ID, file.getIdNote());
+        values.put(DataBaseContract.ImageEntry.COLUMN_UPDATED_AT, file.getUpdated_at());
         long insertId = database.insert(DataBaseContract.ImageEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
@@ -265,6 +315,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(DataBaseContract.FileEntry.COLUMN_PATH, file.getPath());
         values.put(DataBaseContract.FileEntry.COLUMN_NOTE_ID, file.getIdNote());
+        values.put(DataBaseContract.FileEntry.COLUMN_UPDATED_AT, file.getUpdated_at());
         long insertId = database.insert(DataBaseContract.FileEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
@@ -296,6 +347,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DataBaseContract.LabelEntry.COLUMN_TITLE, label.getTitle());
+        values.put(DataBaseContract.LabelEntry.COLUMN_UPDATED_AT, label.getUpdated_at());
         long insertId = database.insert(DataBaseContract.LabelEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
@@ -318,6 +370,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
 
         values.put(DataBaseContract.LabelEntry.COLUMN_TITLE, label.getTitle());
+        values.put(DataBaseContract.LabelEntry.COLUMN_UPDATED_AT, label.getUpdated_at());
 
         long insertId = database.update(DataBaseContract.LabelEntry.TABLE, values, "_id=?", new String[]{label.getId()+""});
         if(insertId == -1){
@@ -338,6 +391,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(DataBaseContract.NoteHasLabelEntry.COLUMN_NOTE_ID, idNote);
         values.put(DataBaseContract.NoteHasLabelEntry.COLUMN_LABEL_ID, idLabel);
+//        values.put(DataBaseContract.NoteHasLabelEntry.COLUMN_UPDATED_AT, user.getUpdated_at());
         long insertId = database.insert(DataBaseContract.NoteHasLabelEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();

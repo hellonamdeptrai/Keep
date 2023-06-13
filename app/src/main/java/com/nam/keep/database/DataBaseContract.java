@@ -12,6 +12,8 @@ public final class DataBaseContract {
         public static final String COLUMN_AVATAR = "_avatar";
         public static final String COLUMN_EMAIL = "_email";
         public static final String COLUMN_PASSWORD = "_password";
+        public static final String COLUMN_UPDATED_AT = "_updated_at";
+        public static final String COLUMN_IS_SYNC = "_is_sync";
     }
 
     public static class NoteEntry implements BaseColumns {
@@ -26,6 +28,7 @@ public final class DataBaseContract {
         public static final String COLUMN_BACKGROUND = "_background";
         public static final String COLUMN_UPDATED_AT = "_updated_at";
         public static final String COLUMN_USER_ID = "_user_id";
+        public static final String COLUMN_IS_SYNC = "_is_sync";
     }
 
     public static class ImageEntry implements BaseColumns {
@@ -33,6 +36,8 @@ public final class DataBaseContract {
         public static final String COLUMN_ID = "_id";
         public static final String COLUMN_PATH = "_path";
         public static final String COLUMN_NOTE_ID = "_note_id";
+        public static final String COLUMN_UPDATED_AT = "_updated_at";
+        public static final String COLUMN_IS_SYNC = "_is_sync";
     }
 
     public static class FileEntry implements BaseColumns {
@@ -40,23 +45,31 @@ public final class DataBaseContract {
         public static final String COLUMN_ID = "_id";
         public static final String COLUMN_PATH = "_path";
         public static final String COLUMN_NOTE_ID = "_note_id";
+        public static final String COLUMN_UPDATED_AT = "_updated_at";
+        public static final String COLUMN_IS_SYNC = "_is_sync";
     }
 
     public static class LabelEntry implements BaseColumns {
         public static final String TABLE = "label";
         public static final String COLUMN_ID = "_id";
         public static final String COLUMN_TITLE = "_title";
+        public static final String COLUMN_UPDATED_AT = "_updated_at";
+        public static final String COLUMN_IS_SYNC = "_is_sync";
     }
 
     public static class NoteHasLabelEntry implements BaseColumns {
         public static final String TABLE = "note_has_label";
         public static final String COLUMN_LABEL_ID = "_label_id";
         public static final String COLUMN_NOTE_ID = "_note_id";
+        public static final String COLUMN_UPDATED_AT = "_updated_at";
+        public static final String COLUMN_IS_SYNC = "_is_sync";
     }
 
     public static class NoteHasUserEntry implements BaseColumns {
         public static final String TABLE = "note_has_user";
         public static final String COLUMN_USER_ID = "_user_id";
         public static final String COLUMN_NOTE_ID = "_note_id";
+        public static final String COLUMN_UPDATED_AT = "_updated_at";
+        public static final String COLUMN_IS_SYNC = "_is_sync";
     }
 }

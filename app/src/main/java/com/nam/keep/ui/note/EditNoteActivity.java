@@ -130,7 +130,7 @@ public class EditNoteActivity extends AppCompatActivity {
     private Button addCheckBox;
     private RecyclerView mainRecorderNote, mImageView, mMainCheckboxNote, mMainLabel;
     private LinearLayout layoutTextTimeNote;
-    private TextView textTimeNote;
+    private TextView textTimeNote, timeUpdated;
     private ImageView closeTextTimeNote;
 
 
@@ -174,6 +174,7 @@ public class EditNoteActivity extends AppCompatActivity {
         layoutTextTimeNote = findViewById(R.id.layout_text_time_note);
         textTimeNote = findViewById(R.id.text_time_note);
         closeTextTimeNote = findViewById(R.id.close_text_time_note);
+        timeUpdated = findViewById(R.id.time_updated);
 
         loadNote();
 
@@ -432,6 +433,14 @@ public class EditNoteActivity extends AppCompatActivity {
 
             mTitle.setText(noteData.getTitle());
             mContent.setText(noteData.getContent());
+            timeUpdated.setVisibility(View.VISIBLE);
+            try {
+                Date dateUpdateAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(noteData.getUpdatedAt());
+                timeUpdated.setText("Đã chỉnh sửa: " + new SimpleDateFormat("HH:mm dd/MM/yyyy").format(dateUpdateAt));
+
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
 
             colorNote = noteData.getColor();
 
