@@ -72,6 +72,7 @@ import com.nam.keep.model.CheckBoxContentNote;
 import com.nam.keep.model.FileModel;
 import com.nam.keep.model.Label;
 import com.nam.keep.model.Note;
+import com.nam.keep.model.User;
 import com.nam.keep.ui.home.helper.MyItemTouchHelperCallback;
 import com.nam.keep.ui.home.helper.OnStartDangListener;
 import com.nam.keep.ui.label.LabelActivity;
@@ -79,11 +80,13 @@ import com.nam.keep.ui.note.adapter.RecyclerCheckBoxNoteAdapter;
 import com.nam.keep.ui.note.adapter.RecyclerImagesAddNoteAdapter;
 import com.nam.keep.ui.note.adapter.RecyclerLabelNoteAdapter;
 import com.nam.keep.ui.note.adapter.RecyclerRecorderNoteAdapter;
+import com.nam.keep.ui.note.adapter.RecyclerUserNoteAdapter;
 import com.nam.keep.ui.note.helper.IClickChecked;
 import com.nam.keep.ui.note.helper.IClickDeleteCheckBox;
 import com.nam.keep.ui.note.helper.IClickRecorder;
 import com.nam.keep.ui.note.helper.ITextWatcherCheckBox;
 import com.nam.keep.ui.paint.PaintActivity;
+import com.nam.keep.ui.user.UserActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -130,7 +133,7 @@ public class EditNoteActivity extends AppCompatActivity {
     private CoordinatorLayout mMainAddNote;
     private RoundedImageView mRoundedImageColor;
     private Button addCheckBox;
-    private RecyclerView mainRecorderNote, mImageView, mMainCheckboxNote, mMainLabel;
+    private RecyclerView mainRecorderNote, mImageView, mMainCheckboxNote, mMainLabel, mMainUser;
     private LinearLayout layoutTextTimeNote;
     private TextView textTimeNote, timeUpdated;
     private ImageView closeTextTimeNote;
@@ -148,6 +151,7 @@ public class EditNoteActivity extends AppCompatActivity {
     ItemTouchHelper itemTouchHelper;
     MediaRecorder mediaRecorder;
     ArrayList<Label> listLabelNote = new ArrayList<>();
+    ArrayList<User> listUserNote = new ArrayList<>();
     ArrayList<String> listPathRecorder = new ArrayList<>();
     Date dateTimePicker;
     private Stack<CharSequence> undoStack;
@@ -177,6 +181,7 @@ public class EditNoteActivity extends AppCompatActivity {
         textTimeNote = findViewById(R.id.text_time_note);
         closeTextTimeNote = findViewById(R.id.close_text_time_note);
         timeUpdated = findViewById(R.id.time_updated);
+        mMainUser = findViewById(R.id.main_users_note);
 
         loadNote();
 
@@ -324,6 +329,7 @@ public class EditNoteActivity extends AppCompatActivity {
                                 dataSource.deleteNote(idNote);
                                 dataSource.deleteFileInNote(idNote);
                                 dataSource.detachLabel(idNote);
+                                dataSource.detachUser(idNote);
                                 dataSource.deleteImageInNote(idNote);
                                 dataSource.close();
                                 setResult(RESULT_OK);
@@ -340,6 +346,15 @@ public class EditNoteActivity extends AppCompatActivity {
                         alert.show();
                         alert.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.nam_keep));
                         alert.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.nam_keep));
+                    }
+                });
+                bottomSheetDialog.findViewById(R.id.add_person_note).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        bottomSheetDialog.dismiss();
+                        Intent intent = new Intent(EditNoteActivity.this, UserActivity.class);
+                        intent.putExtra("userListEditIntent", listUserNote);
+                        startActivityForResult(intent, 15);
                     }
                 });
             }
@@ -434,6 +449,7 @@ public class EditNoteActivity extends AppCompatActivity {
             getListImages(idNote);
             addListImage();
             getListLabel();
+            getListUser();
             getListRecorder();
             listViewRecording();
 
@@ -540,6 +556,14 @@ public class EditNoteActivity extends AppCompatActivity {
                 mMainLabel.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
                 RecyclerLabelNoteAdapter adapter1 = new RecyclerLabelNoteAdapter(listLabelNote);
                 mMainLabel.setAdapter(adapter1);
+            }
+        }
+        if (requestCode == 15 && resultCode == RESULT_OK) {
+            if (data != null && data.hasExtra("userListIntent")) {
+                listUserNote = data.getParcelableArrayListExtra("userListIntent");
+                mMainUser.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
+                RecyclerUserNoteAdapter adapter1 = new RecyclerUserNoteAdapter(listUserNote);
+                mMainUser.setAdapter(adapter1);
             }
         }
     }
@@ -677,6 +701,23 @@ public class EditNoteActivity extends AppCompatActivity {
         mMainLabel.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
         RecyclerLabelNoteAdapter adapter1 = new RecyclerLabelNoteAdapter(listLabelNote);
         mMainLabel.setAdapter(adapter1);
+    }
+
+    private void getListUser() {
+        Cursor cursor = dataSource.getUserNote(idNote);
+        if(cursor.getCount() != 0){
+            while (cursor.moveToNext()){
+                User user = new User();
+                user.setId(Long.parseLong(cursor.getString(0)));
+                user.setName(cursor.getString(1));
+                user.setEmail(cursor.getString(3));
+                user.setAvatar(cursor.getString(2));
+                listUserNote.add(user);
+            }
+        }
+        mMainUser.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
+        RecyclerUserNoteAdapter adapter1 = new RecyclerUserNoteAdapter(listUserNote);
+        mMainUser.setAdapter(adapter1);
     }
 
     private Uri getUriFromPath(String path) {
@@ -1029,6 +1070,10 @@ public class EditNoteActivity extends AppCompatActivity {
             dataSource.detachLabel(idNote);
             for (Label label: listLabelNote) {
                 dataSource.attachLabel(idNote, label.getId());
+            }
+            dataSource.detachUser(idNote);
+            for (User user: listUserNote) {
+                dataSource.attachUser(idNote, user.getId());
             }
             dataSource.close();
             setResult(RESULT_OK);

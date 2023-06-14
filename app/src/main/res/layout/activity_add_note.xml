@@ -139,6 +139,10 @@
                     app:riv_mutate_background="true"
                     tools:ignore="MissingConstraints" />
             </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/main_users_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

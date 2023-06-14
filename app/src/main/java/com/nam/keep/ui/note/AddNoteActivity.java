@@ -2,6 +2,7 @@ package com.nam.keep.ui.note;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -46,10 +47,12 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.MainActivity;
 import com.nam.keep.R;
 import com.nam.keep.model.Label;
+import com.nam.keep.model.User;
 import com.nam.keep.ui.label.LabelActivity;
 import com.nam.keep.ui.login.LoginActivity;
 import com.nam.keep.ui.note.adapter.RecyclerLabelNoteAdapter;
 import com.nam.keep.ui.note.adapter.RecyclerRecorderNoteAdapter;
+import com.nam.keep.ui.note.adapter.RecyclerUserNoteAdapter;
 import com.nam.keep.ui.note.helper.IClickChecked;
 import com.nam.keep.ui.note.helper.IClickDeleteCheckBox;
 import com.nam.keep.ui.note.helper.IClickRecorder;
@@ -63,6 +66,7 @@ import com.nam.keep.model.Note;
 import com.nam.keep.ui.home.helper.MyItemTouchHelperCallback;
 import com.nam.keep.ui.home.helper.OnStartDangListener;
 import com.nam.keep.ui.paint.PaintActivity;
+import com.nam.keep.ui.user.UserActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -105,6 +109,7 @@ public class AddNoteActivity extends AppCompatActivity {
     ItemTouchHelper itemTouchHelper;
     MediaRecorder mediaRecorder;
     ArrayList<Label> listLabelNote = new ArrayList<>();
+    ArrayList<User> listUserNote = new ArrayList<>();
     ArrayList<String> listPathRecorder = new ArrayList<>();
     Date dateTimePicker;
     private Stack<CharSequence> undoStack;
@@ -253,6 +258,41 @@ public class AddNoteActivity extends AppCompatActivity {
                         }
                     }
                 });
+                bottomSheetDialog.findViewById(R.id.add_delete_note).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        bottomSheetDialog.dismiss();
+                        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(AddNoteActivity.this);
+                        builder.setTitle("Xóa ghi chú?");
+                        builder.setMessage("Bạn có chắc chắn muốn xóa ghi chú này không?");
+                        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                isSaveData = false;
+                                finish();
+                            }
+                        });
+                        builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        });
+                        androidx.appcompat.app.AlertDialog alert = builder.create();
+                        alert.show();
+                        alert.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.nam_keep));
+                        alert.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.nam_keep));
+                    }
+                });
+                bottomSheetDialog.findViewById(R.id.add_person_note).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        bottomSheetDialog.dismiss();
+                        Intent intent = new Intent(AddNoteActivity.this, UserActivity.class);
+                        intent.putExtra("userListEditIntent", listUserNote);
+                        startActivityForResult(intent, 15);
+                    }
+                });
             }
         });
 
@@ -381,6 +421,15 @@ public class AddNoteActivity extends AppCompatActivity {
                 RecyclerView recyclerViewLabelNote = findViewById(R.id.main_categories_note);
                 recyclerViewLabelNote.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
                 RecyclerLabelNoteAdapter adapter1 = new RecyclerLabelNoteAdapter(listLabelNote);
+                recyclerViewLabelNote.setAdapter(adapter1);
+            }
+        }
+        if (requestCode == 15 && resultCode == RESULT_OK) {
+            if (data != null && data.hasExtra("userListIntent")) {
+                listUserNote = data.getParcelableArrayListExtra("userListIntent");
+                RecyclerView recyclerViewLabelNote = findViewById(R.id.main_users_note);
+                recyclerViewLabelNote.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
+                RecyclerUserNoteAdapter adapter1 = new RecyclerUserNoteAdapter(listUserNote);
                 recyclerViewLabelNote.setAdapter(adapter1);
             }
         }
@@ -827,6 +876,9 @@ public class AddNoteActivity extends AppCompatActivity {
             }
             for (Label label: listLabelNote) {
                 dataSource.attachLabel(idNewNote, label.getId());
+            }
+            for (User user: listUserNote) {
+                dataSource.attachUser(idNewNote, user.getId());
             }
             dataSource.close();
             setResult(RESULT_OK);

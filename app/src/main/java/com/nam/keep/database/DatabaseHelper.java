@@ -39,7 +39,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " (" + DataBaseContract.UserEntry.COLUMN_ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 DataBaseContract.UserEntry.COLUMN_NAME + " TEXT, " +
-                DataBaseContract.UserEntry.COLUMN_AVATAR + " BLOB, " +
+                DataBaseContract.UserEntry.COLUMN_AVATAR + " TEXT, " +
                 DataBaseContract.UserEntry.COLUMN_EMAIL + " TEXT, " +
                 DataBaseContract.UserEntry.COLUMN_PASSWORD + " TEXT, " +
                 DataBaseContract.UserEntry.COLUMN_UPDATED_AT + " TIMESTAMP, " +
@@ -414,6 +414,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 DataBaseContract.LabelEntry.TABLE +"." +DataBaseContract.LabelEntry.COLUMN_ID + " = " +
                 DataBaseContract.NoteHasLabelEntry.TABLE + "." + DataBaseContract.NoteHasLabelEntry.COLUMN_LABEL_ID +
                 " WHERE " + DataBaseContract.NoteHasLabelEntry.TABLE +"." +DataBaseContract.NoteHasLabelEntry.COLUMN_NOTE_ID + " = " +
+                idNote;
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+    public void attachUser(long idNote, long idUser){
+        database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID, idNote);
+        values.put(DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID, idUser);
+//        values.put(DataBaseContract.NoteHasLabelEntry.COLUMN_UPDATED_AT, user.getUpdated_at());
+        long insertId = database.insert(DataBaseContract.NoteHasUserEntry.TABLE, null, values);
+        if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void detachUser(long idNote){
+        database = this.getWritableDatabase();
+        long result = database.delete(DataBaseContract.NoteHasUserEntry.TABLE,
+                DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID+"=?", new String[]{idNote+""});
+        if(result == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public Cursor getUserNote(long idNote){
+        String query = "SELECT " + DataBaseContract.UserEntry.TABLE + ".* FROM " + DataBaseContract.NoteHasUserEntry.TABLE +
+                " JOIN " + DataBaseContract.UserEntry.TABLE + " ON " +
+                DataBaseContract.UserEntry.TABLE +"." +DataBaseContract.UserEntry.COLUMN_ID + " = " +
+                DataBaseContract.NoteHasUserEntry.TABLE + "." + DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID +
+                " WHERE " + DataBaseContract.NoteHasUserEntry.TABLE +"." +DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID + " = " +
                 idNote;
         database = this.getReadableDatabase();
 

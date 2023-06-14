@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.R;
 import com.nam.keep.model.Label;
+import com.nam.keep.model.User;
 import com.nam.keep.ui.note.adapter.RecyclerCheckBoxNoteHomeAdapter;
 import com.nam.keep.ui.note.adapter.RecyclerImagesNoteAdapter;
 import com.nam.keep.database.DatabaseHelper;
@@ -30,6 +31,7 @@ import com.nam.keep.ui.home.helper.IClickItemDetail;
 import com.nam.keep.ui.home.helper.ItemTouchHelperAdapter;
 import com.nam.keep.ui.home.helper.OnStartDangListener;
 import com.nam.keep.ui.note.adapter.RecyclerLabelNoteAdapter;
+import com.nam.keep.ui.note.adapter.RecyclerUserNoteHomeAdapter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -71,6 +73,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
 
         viewHolder.mainImagesNoteHome.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
         viewHolder.mainCategoriesNoteHome.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
+        viewHolder.mainUserNoteHome.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
 
         return viewHolder;
     }
@@ -84,6 +87,9 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
 
         RecyclerLabelNoteAdapter adapter1 = new RecyclerLabelNoteAdapter(getListLabel(noteItem.getId()));
         holder.mainCategoriesNoteHome.setAdapter(adapter1);
+
+        RecyclerUserNoteHomeAdapter adapter2 = new RecyclerUserNoteHomeAdapter(getListUser(noteItem.getId()));
+        holder.mainUserNoteHome.setAdapter(adapter2);
 
         if (getRecorder(noteItem.getId())) {
             holder.iconRecorderHome.setVisibility(View.VISIBLE);
@@ -188,6 +194,22 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
         return listLabelNote;
     }
 
+    private List<User> getListUser(long idNote) {
+        List<User> listUserNote = new ArrayList<>();
+        Cursor cursor = dataSource.getUserNote(idNote);
+        if(cursor.getCount() != 0){
+            while (cursor.moveToNext()){
+                User user = new User();
+                user.setId(Long.parseLong(cursor.getString(0)));
+                user.setName(cursor.getString(1));
+                user.setEmail(cursor.getString(3));
+                user.setAvatar(cursor.getString(2));
+                listUserNote.add(user);
+            }
+        }
+        return listUserNote;
+    }
+
     private List<CheckBoxContentNote> getListCheckBox(String data) {
         List<CheckBoxContentNote> list = new ArrayList<>();
         String[] arr = data.split("\n");
@@ -231,7 +253,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView title, content, textTimeHome;
         ImageView imageView, iconRecorderHome;
-        RecyclerView mainImagesNoteHome, mainCheckboxNoteHome, mainCategoriesNoteHome;
+        RecyclerView mainImagesNoteHome, mainCheckboxNoteHome, mainCategoriesNoteHome, mainUserNoteHome;
         RoundedImageView colorBackgroundImagedHome, imageBackgroundHome;
         LinearLayout layoutTextTimeHome;
 
@@ -251,6 +273,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
             iconRecorderHome = itemView.findViewById(R.id.icon_recorder_home);
             textTimeHome = itemView.findViewById(R.id.text_time_home);
             layoutTextTimeHome = itemView.findViewById(R.id.layout_text_time_home);
+            mainUserNoteHome = itemView.findViewById(R.id.main_user_note_home);
         }
     }
 }

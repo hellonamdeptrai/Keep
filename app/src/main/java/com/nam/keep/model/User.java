@@ -1,12 +1,18 @@
 package com.nam.keep.model;
 
-public class User {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+public class User implements Parcelable {
     private long id;
     private String name;
-    private byte[] avatar;
+    private String avatar;
     private String email;
     private String password;
     private int isSync;
+    private int isChecked;
 
     // api
     private String password_confirmation;
@@ -14,6 +20,14 @@ public class User {
     private String remember_token;
     private String created_at;
     private String updated_at;
+
+    protected User(Parcel in) {
+        id = in.readLong();
+        name = in.readString();
+        email = in.readString();
+        avatar = in.readString();
+        isChecked = in.readInt();
+    }
 
     public User() {
     }
@@ -29,7 +43,7 @@ public class User {
         this.password = password;
     }
 
-    public User(long id, String name, byte[] avatar, String email, String password) {
+    public User(long id, String name, String avatar, String email, String password) {
         this.id = id;
         this.name = name;
         this.avatar = avatar;
@@ -44,7 +58,7 @@ public class User {
         this.password_confirmation = password_confirmation;
     }
 
-    public User(String name, byte[] avatar, String email, String password, String updated_at, int isSync) {
+    public User(String name, String avatar, String email, String password, String updated_at, int isSync) {
         this.name = name;
         this.avatar = avatar;
         this.email = email;
@@ -69,11 +83,11 @@ public class User {
         this.name = name;
     }
 
-    public byte[] getAvatar() {
+    public String getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(byte[] avatar) {
+    public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
@@ -140,4 +154,38 @@ public class User {
     public void setIsSync(int isSync) {
         this.isSync = isSync;
     }
+
+    public int getIsChecked() {
+        return isChecked;
+    }
+
+    public void setIsChecked(int isChecked) {
+        this.isChecked = isChecked;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeLong(id);
+        parcel.writeString(name);
+        parcel.writeString(email);
+        parcel.writeString(avatar);
+        parcel.writeInt(isChecked);
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 }
