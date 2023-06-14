@@ -1,12 +1,17 @@
 package com.nam.keep.api;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.nam.keep.MainActivity;
+import com.nam.keep.database.DataBaseContract;
 import com.nam.keep.database.DatabaseHelper;
 import com.nam.keep.model.AllData;
 import com.nam.keep.model.Note;
@@ -25,13 +30,16 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    private static final String BASE_URL = "http://192.168.50.143:8000/api/";
+    private static final String BASE_URL = "http://172.20.10.7:8000/api/";
     private static Retrofit retrofit;
     private final ApiService apiService;
     DatabaseHelper myDatabase;
 
-    public ApiClient() {
-        Retrofit retrofit = getRetrofitInstance("1|xQnq25nQxWb6kwY5M5siuBfg7WFBPpmflHSQLMw7");
+    public ApiClient(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString("token", "");
+
+        Retrofit retrofit = getRetrofitInstance(token);
 
         apiService = retrofit.create(ApiService.class);
     }
@@ -89,25 +97,27 @@ public class ApiClient {
         if(cursor.getCount() != 0){
             myDatabase.deleteUserSync(1);
             for (User user: allData.getUsers()) {
-                myDatabase.createUser(new User(
-                        user.getName(),
-                        user.getAvatar(),
-                        user.getEmail(),
-                        user.getPassword(),
-                        user.getUpdated_at(),
-                        1
-                ));
+                User userCreate = new User();
+                userCreate.setId(user.getId());
+                userCreate.setName(user.getName());
+                userCreate.setAvatar(user.getAvatar() != null ? user.getAvatar()  : "");
+                userCreate.setEmail(user.getEmail());
+                userCreate.setPassword("");
+                userCreate.setUpdated_at(user.getUpdated_at());
+                userCreate.setIsSync(1);
+                myDatabase.createUser(userCreate);
             }
         } else {
             for (User user: allData.getUsers()) {
-                myDatabase.createUser(new User(
-                        user.getName(),
-                        user.getAvatar(),
-                        user.getEmail(),
-                        user.getPassword(),
-                        user.getUpdated_at(),
-                        1
-                ));
+                User userCreate = new User();
+                userCreate.setId(user.getId());
+                userCreate.setName(user.getName());
+                userCreate.setAvatar(user.getAvatar() != null ? user.getAvatar()  : "");
+                userCreate.setEmail(user.getEmail());
+                userCreate.setPassword("");
+                userCreate.setUpdated_at(user.getUpdated_at());
+                userCreate.setIsSync(1);
+                myDatabase.createUser(userCreate);
             }
         }
 
@@ -167,18 +177,63 @@ public class ApiClient {
 //        }
 //    }
 
-    public void registerUser(User user) {
+    public void registerUser(Context context, User user) {
         Call<User> call = apiService.registerUser(user);
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                System.out.println("aaaaaaaa "+response.body());
+                myDatabase = new DatabaseHelper(context);
+                User userData = response.body();
+                assert userData != null;
+
+                User userCreate = new User();
+                userCreate.setName(userData.getName());
+                userCreate.setAvatar(userData.getAvatar() != null ? userData.getAvatar()  : "");
+                userCreate.setEmail(userData.getEmail());
+                userCreate.setPassword("");
+                userCreate.setUpdated_at(userData.getUpdated_at());
+                userCreate.setIsSync(1);
+                myDatabase.createUser(userCreate);
+
+                Toast.makeText(context, "Đăng ký tài khoản thành công", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 // Xử lý lỗi kết nối
-                System.out.println("ccccccccc"+t);
+                Toast.makeText(context, "Lỗi kết nối đăng ký tài khoản", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void loginUser(Context context, User user) {
+        Call<User> call = apiService.loginUser(user);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                User userData = response.body();
+                assert userData != null;
+
+                // Lưu token vào SharedPreferences
+                SharedPreferences sharedPreferences = context.getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("token", userData.getToken());
+                editor.putLong("tokenable_id", userData.getTokenable_id());
+                editor.apply();
+
+
+                Intent intent = new Intent(context, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                ((Activity) context).finish();
+                Toast.makeText(context, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                // Xử lý lỗi kết nối
+                Toast.makeText(context, "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show();
             }
         });
     }

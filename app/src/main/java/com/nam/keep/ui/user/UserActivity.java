@@ -5,7 +5,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -31,6 +33,8 @@ public class UserActivity extends AppCompatActivity {
     DatabaseHelper myDatabase;
     ArrayList<User> list = new ArrayList<>();
     ArrayList<User> userList = new ArrayList<>();
+    SharedPreferences sharedPreferences;
+    long idUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +45,9 @@ public class UserActivity extends AppCompatActivity {
         }
 
         buttonBack = findViewById(R.id.button_back_user);
+
+        sharedPreferences = getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
+        idUser = sharedPreferences.getLong("tokenable_id", 0);
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,7 +73,7 @@ public class UserActivity extends AppCompatActivity {
     }
 
     private void getListUser() {
-        Cursor cursor = myDatabase.getUser();
+        Cursor cursor = myDatabase.getUserNotMe(idUser);
         if(cursor.getCount() != 0){
             for (int i = 0; cursor.moveToNext(); i++) {
                 User user = new User();

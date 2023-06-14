@@ -117,6 +117,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void createUser(User user) {
         database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        values.put(DataBaseContract.UserEntry.COLUMN_ID, user.getId());
         values.put(DataBaseContract.UserEntry.COLUMN_NAME, user.getName());
         values.put(DataBaseContract.UserEntry.COLUMN_AVATAR, user.getAvatar());
         values.put(DataBaseContract.UserEntry.COLUMN_EMAIL, user.getEmail());
@@ -129,8 +130,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void updateUser(User user){
+        database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.UserEntry.COLUMN_NAME, user.getName());
+        values.put(DataBaseContract.UserEntry.COLUMN_AVATAR, user.getAvatar());
+        values.put(DataBaseContract.UserEntry.COLUMN_UPDATED_AT, user.getUpdated_at());
+        values.put(DataBaseContract.UserEntry.COLUMN_IS_SYNC, user.getIsSync());
+        long insertId = database.update(DataBaseContract.UserEntry.TABLE, values, DataBaseContract.NoteEntry.COLUMN_ID+
+                "=?", new String[]{user.getId()+""});
+        if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public Cursor getUserDetail(long id){
+        String query = "SELECT * FROM " + DataBaseContract.UserEntry.TABLE + " WHERE " +
+                DataBaseContract.UserEntry.COLUMN_ID + " = " + id;
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+
     public Cursor getUser() {
         String query = "SELECT * FROM " + DataBaseContract.UserEntry.TABLE;
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+    public Cursor getUserNotMe(long id) {
+        String query = "SELECT * FROM " + DataBaseContract.UserEntry.TABLE + " WHERE " +
+                DataBaseContract.UserEntry.COLUMN_ID + " != " + id;
         database = this.getReadableDatabase();
 
         Cursor cursor = null;

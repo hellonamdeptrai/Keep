@@ -14,6 +14,9 @@ public interface ApiService {
     @POST("auth/register")
     Call<User> registerUser(@Body User user);
 
+    @POST("auth/login")
+    Call<User> loginUser(@Body User user);
+
     @GET("sync")
     Call<AllData> getAllData();
 }

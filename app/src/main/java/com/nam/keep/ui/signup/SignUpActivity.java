@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.nam.keep.MainActivity;
 import com.nam.keep.R;
+import com.nam.keep.api.ApiClient;
 import com.nam.keep.database.DatabaseHelper;
 import com.nam.keep.model.User;
 import com.nam.keep.utils.UtilsFunction;
@@ -79,9 +80,14 @@ public class SignUpActivity extends AppCompatActivity {
                     mPasswordConfirmation.setError("Mật khẩu không khớp!");
                     return;
                 }
-                dataSource.createUser(new User(
-                        name, email, UtilsFunction.hashPassword(passwordConfirm)
-                ));
+                ApiClient apiClient = new ApiClient(SignUpActivity.this);
+                User user = new User();
+                user.setName(mFullName.getText().toString());
+                user.setEmail(mEmail.getText().toString());
+                user.setPassword(mPassword.getText().toString());
+                user.setPassword_confirmation(mPasswordConfirmation.getText().toString());
+                apiClient.registerUser(SignUpActivity.this, user);
+
                 finish();
             }
         });

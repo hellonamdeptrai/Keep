@@ -1,6 +1,8 @@
 package com.nam.keep;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +24,7 @@ import com.nam.keep.notification.NotificationHelper;
 import com.nam.keep.ui.login.LoginActivity;
 import com.nam.keep.ui.note.AddNoteActivity;
 import com.nam.keep.ui.setting.SettingActivity;
+import com.nam.keep.ui.user.ProfileActivity;
 
 import java.util.Calendar;
 
@@ -91,8 +94,15 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent intentLogin = new Intent(MainActivity.this, LoginActivity.class);
-                startActivity(intentLogin);
+                SharedPreferences sharedPreferences = getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
+                String token = sharedPreferences.getString("token", "");
+                if (token.isEmpty()) {
+                    Intent intentLogin = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(intentLogin);
+                } else {
+                    Intent intentProfile = new Intent(MainActivity.this, ProfileActivity.class);
+                    startActivity(intentProfile);
+                }
                 return true;
             }
         });

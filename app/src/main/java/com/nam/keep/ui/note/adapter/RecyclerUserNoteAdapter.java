@@ -8,6 +8,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.R;
 import com.nam.keep.model.User;
 
@@ -29,7 +33,16 @@ public class RecyclerUserNoteAdapter extends RecyclerView.Adapter<RecyclerUserNo
 
     @Override
     public void onBindViewHolder(@NonNull LabelNoteViewHolder holder, int position) {
-        holder.textView.setText(list.get(position).getName());
+        final User userItem = list.get(position);
+
+        if (!userItem.getAvatar().isEmpty()) {
+            Glide.with(holder.avatar.getContext())
+                    .load("file://" + userItem.getAvatar())
+                    .override(100,100)
+                    .apply(new RequestOptions().transform(new CircleCrop()))
+                    .into(holder.avatar);
+        }
+        holder.textView.setText(userItem.getName());
     }
 
     @Override
@@ -39,10 +52,12 @@ public class RecyclerUserNoteAdapter extends RecyclerView.Adapter<RecyclerUserNo
 
     public class LabelNoteViewHolder extends RecyclerView.ViewHolder {
         TextView textView;
+        RoundedImageView avatar;
 
         public LabelNoteViewHolder(@NonNull View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.text_user_name_note);
+            avatar = itemView.findViewById(R.id.avatar_user_note);
         }
     }
 }

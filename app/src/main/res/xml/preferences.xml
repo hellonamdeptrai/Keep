@@ -14,17 +14,17 @@
             app:iconSpaceReserved="false"/>
 
     </PreferenceCategory>
-    <PreferenceCategory
-        android:title="Thông báo"
-        app:iconSpaceReserved="false">
-        <CheckBoxPreference
-            android:key="pref_key_enable_notifications"
-            android:title="Enable Notifications"
-            android:summary="Enable or disable push notifications"
-            android:defaultValue="true"
-            app:iconSpaceReserved="false"/>
+<!--    <PreferenceCategory-->
+<!--        android:title="Thông báo"-->
+<!--        app:iconSpaceReserved="false">-->
+<!--        <CheckBoxPreference-->
+<!--            android:key="pref_key_enable_notifications"-->
+<!--            android:title="Enable Notifications"-->
+<!--            android:summary="Enable or disable push notifications"-->
+<!--            android:defaultValue="true"-->
+<!--            app:iconSpaceReserved="false"/>-->
 
-    </PreferenceCategory>
+<!--    </PreferenceCategory>-->
     <PreferenceCategory
         android:title="Đồng bộ"
         app:iconSpaceReserved="false">

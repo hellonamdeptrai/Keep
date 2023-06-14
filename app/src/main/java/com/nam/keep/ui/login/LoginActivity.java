@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.nam.keep.MainActivity;
 import com.nam.keep.R;
+import com.nam.keep.api.ApiClient;
 import com.nam.keep.database.DatabaseHelper;
 import com.nam.keep.model.User;
 import com.nam.keep.ui.signup.SignUpActivity;
@@ -64,17 +65,23 @@ public class LoginActivity extends AppCompatActivity {
                     mPassword.setError("Mật khẩu không được để trống!");
                     return;
                 }
-                if (dataSource.login(new User(
-                        email, UtilsFunction.hashPassword(password)
-                ))) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    Toast.makeText(LoginActivity.this, "Email hoặc mật khẩu không đúng!", Toast.LENGTH_SHORT).show();
-                }
+                ApiClient apiClient = new ApiClient(LoginActivity.this);
+                User user = new User();
+                user.setEmail(mEmail.getText().toString());
+                user.setPassword(mPassword.getText().toString());
+                user.setDevice_name("mobile");
+                apiClient.loginUser(LoginActivity.this, user);
+//                if (dataSource.login(new User(
+//                        email, UtilsFunction.hashPassword(password)
+//                ))) {
+//                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    startActivity(intent);
+//                    finish();
+//                } else {
+//                    Toast.makeText(LoginActivity.this, "Email hoặc mật khẩu không đúng!", Toast.LENGTH_SHORT).show();
+//                }
 
             }
         });

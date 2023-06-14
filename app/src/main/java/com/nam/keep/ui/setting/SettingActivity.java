@@ -10,6 +10,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -53,11 +54,16 @@ public class SettingActivity extends AppCompatActivity {
         private Preference syncPreference;
         private ApiClient apiClient;
         DatabaseHelper myDatabase;
+        SharedPreferences sharedPreferences;
+        String token;
 
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences, rootKey);
+
+            sharedPreferences = getContext().getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
+            token = sharedPreferences.getString("token", "");
 
             themePreference = findPreference("pref_key_theme_mode");
             assert themePreference != null;
@@ -80,26 +86,20 @@ public class SettingActivity extends AppCompatActivity {
                 public boolean onPreferenceClick(Preference preference) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle("Đồng bộ dữ liệu?");
-                    builder.setMessage("Bạn có chắc chắn muốn đồng bộ dữ liệu không?");
-                    builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            apiClient = new ApiClient();
-                            apiClient.getAll(getContext(), lottieAnimationView, frameLayout);
-                        }
-                    });
-                    builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            myDatabase = new DatabaseHelper(getContext());
-                            Cursor cursor = myDatabase.getUser();
-                            if(cursor.getCount() != 0) {
-                                while (cursor.moveToNext()) {
-                                    System.out.println(cursor.getString(3));
-
-                                }
-
+                    builder.setMessage(token.isEmpty() ? "Vui lòng đăng nhập để sử dụng chức năng này" : "Bạn có chắc chắn muốn đồng bộ dữ liệu không?");
+                    if (!token.isEmpty()) {
+                        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                apiClient = new ApiClient(getContext());
+                                apiClient.getAll(getContext(), lottieAnimationView, frameLayout);
                             }
+                        });
+                    }
+                    builder.setNegativeButton(token.isEmpty() ?"Đóng" : "Không", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
                         }
                     });
                     AlertDialog alert = builder.create();

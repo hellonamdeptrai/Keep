@@ -11,6 +11,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
+import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.R;
 import com.nam.keep.model.Label;
 import com.nam.keep.model.User;
@@ -38,6 +42,14 @@ public class UserAddNoteAdapter extends RecyclerView.Adapter<UserAddNoteAdapter.
     @Override
     public void onBindViewHolder(@NonNull LabelViewHolder holder, @SuppressLint("RecyclerView") int position) {
         final User userItem = list.get(position);
+
+        if (!userItem.getAvatar().isEmpty()) {
+            Glide.with(holder.avatar.getContext())
+                    .load("file://" + userItem.getAvatar())
+                    .override(100,100)
+                    .apply(new RequestOptions().transform(new CircleCrop()))
+                    .into(holder.avatar);
+        }
 
         holder.textViewName.setText(userItem.getName());
         holder.textViewEmail.setText(userItem.getEmail());
@@ -68,12 +80,14 @@ public class UserAddNoteAdapter extends RecyclerView.Adapter<UserAddNoteAdapter.
         TextView textViewName, textViewEmail;
         LinearLayout labelItemCheckbox;
         CheckBox labelCheckbox;
+        RoundedImageView avatar;
         public LabelViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewName = itemView.findViewById(R.id.text_name_user);
             textViewEmail = itemView.findViewById(R.id.text_email_user);
             labelItemCheckbox = itemView.findViewById(R.id.main_user_item_checkbox);
             labelCheckbox = itemView.findViewById(R.id.user_checkbox);
+            avatar = itemView.findViewById(R.id.avatar_checkbox_item);
         }
     }
 }

@@ -12,7 +12,7 @@
         android:id="@+id/avatar_home_item"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:src="@drawable/gg5"
+        android:src="@drawable/ic_baseline_account_circle_24"
         android:adjustViewBounds="true"
         app:riv_corner_radius="50dp"/>
 

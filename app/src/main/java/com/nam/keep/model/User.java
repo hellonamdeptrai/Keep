@@ -20,6 +20,9 @@ public class User implements Parcelable {
     private String remember_token;
     private String created_at;
     private String updated_at;
+    private String device_name;
+    private long tokenable_id;
+    private String token;
 
     protected User(Parcel in) {
         id = in.readLong();
@@ -161,6 +164,30 @@ public class User implements Parcelable {
 
     public void setIsChecked(int isChecked) {
         this.isChecked = isChecked;
+    }
+
+    public String getDevice_name() {
+        return device_name;
+    }
+
+    public void setDevice_name(String device_name) {
+        this.device_name = device_name;
+    }
+
+    public long getTokenable_id() {
+        return tokenable_id;
+    }
+
+    public void setTokenable_id(long tokenable_id) {
+        this.tokenable_id = tokenable_id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override
