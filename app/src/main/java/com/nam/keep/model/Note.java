@@ -13,6 +13,7 @@ public class Note {
     private byte[] background;
     private String updatedAt;
     private long userId;
+    private int isSync;
 
     // api
     private String is_check_box_or_content;
@@ -170,5 +171,13 @@ public class Note {
 
     public void setUpdated_at(String updated_at) {
         this.updated_at = updated_at;
+    }
+
+    public int getIsSync() {
+        return isSync;
+    }
+
+    public void setIsSync(int isSync) {
+        this.isSync = isSync;
     }
 }

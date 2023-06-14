@@ -19,6 +19,8 @@ package com.nam.keep.ui.note;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -289,7 +291,25 @@ public class EditNoteActivity extends AppCompatActivity {
                         startActivityForResult(intent, 14);
                     }
                 });
+                bottomSheetDialog.findViewById(R.id.add_share_note).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        bottomSheetDialog.dismiss();
+                        // Tạo Intent để chia sẻ văn bản
+                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                        shareIntent.setType("text/plain");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, mTitle.getText() +"\n\n" + mContent.getText());
 
+                        // Kiểm tra và chọn ứng dụng chia sẻ
+                        PackageManager packageManager = getPackageManager();
+                        List<ResolveInfo> activities = packageManager.queryIntentActivities(shareIntent, 0);
+                        if (activities.size() > 0) {
+                            // Mở hộp thoại chọn ứng dụng chia sẻ
+                            Intent chooserIntent = Intent.createChooser(shareIntent, "Chia sẻ qua");
+                            startActivity(chooserIntent);
+                        }
+                    }
+                });
                 bottomSheetDialog.findViewById(R.id.add_delete_note).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -427,8 +447,9 @@ public class EditNoteActivity extends AppCompatActivity {
                 noteData.setDeadline(cursor.getString(5));
                 noteData.setColor(Integer.parseInt(cursor.getString(6)));
                 noteData.setBackground(cursor.getBlob(7));
-                noteData.setUpdatedAt(cursor.getString(8));
-                noteData.setUserId(Long.parseLong(cursor.getString(9)));
+                noteData.setUpdatedAt(cursor.getString(9));
+                noteData.setUserId(Long.parseLong(cursor.getString(8)));
+                noteData.setIsSync(Integer.parseInt(cursor.getString(10)));
             }
 
             mTitle.setText(noteData.getTitle());
@@ -969,17 +990,17 @@ public class EditNoteActivity extends AppCompatActivity {
             if (isCheckBoxOrContent == 1) {
                 editTextAddIdCheckBox();
             }
-            dataSource.updateNote(new Note(
-                    idNote,
-                    dataSource.getCountNote(),
-                    mTitle.getText().toString(),
-                    mContent.getText().toString(),
-                    isCheckBoxOrContent,
-                    dateTimePicker != null ? dateTimePicker.toString() : "",
-                    colorNote,
-                    imageBackground != null ? Objects.requireNonNull(byteArrayOutputStream).toByteArray() : null,
-                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date())
-            ));
+            Note note = new Note();
+            note.setId(idNote);
+            note.setIndex(dataSource.getCountNote());
+            note.setTitle(mTitle.getText().toString());
+            note.setContent(mContent.getText().toString());
+            note.setIsCheckBoxOrContent(isCheckBoxOrContent);
+            note.setDeadline(dateTimePicker != null ? dateTimePicker.toString() : "");
+            note.setColor(colorNote);
+            note.setBackground(imageBackground != null ? Objects.requireNonNull(byteArrayOutputStream).toByteArray() : null);
+            note.setUpdatedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
+            dataSource.updateNote(note);
 
             dataSource.deleteFileInNote(idNote);
             for (String pathFile : listPathRecorder) {

@@ -28,6 +28,7 @@ import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.MainActivity;
 import com.nam.keep.R;
 import com.nam.keep.api.ApiClient;
+import com.nam.keep.database.DataBaseContract;
 import com.nam.keep.database.DatabaseHelper;
 import com.nam.keep.databinding.FragmentHomeBinding;
 import com.nam.keep.model.Note;
@@ -39,7 +40,10 @@ import com.nam.keep.ui.home.helper.MyItemTouchHelperCallback;
 import com.nam.keep.ui.note.AddNoteActivity;
 import com.nam.keep.ui.note.EditNoteActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment {
@@ -151,17 +155,19 @@ public class HomeFragment extends Fragment {
         Cursor cursor = myDatabase.getNote();
         if(cursor.getCount() != 0){
             while (cursor.moveToNext()){
-                notes.add(new Note(Long.parseLong(cursor.getString(0))
-                        ,Integer.parseInt(cursor.getString(1))
-                        ,cursor.getString(2)
-                        ,cursor.getString(3)
-                        ,Integer.parseInt(cursor.getString(4))
-                        ,cursor.getString(5)
-                        ,Integer.parseInt(cursor.getString(6))
-                        ,cursor.getBlob(7)
-                        ,cursor.getString(8)
-                        ,Long.parseLong(cursor.getString(9))
-                ));
+                Note note = new Note();
+                note.setId(Long.parseLong(cursor.getString(0)));
+                note.setIndex(Integer.parseInt(cursor.getString(1)));
+                note.setTitle(cursor.getString(2));
+                note.setContent(cursor.getString(3));
+                note.setIsCheckBoxOrContent(Integer.parseInt(cursor.getString(4)));
+                note.setDeadline(cursor.getString(5));
+                note.setColor(Integer.parseInt(cursor.getString(6)));
+                note.setBackground(cursor.getBlob(7));
+                note.setUpdatedAt(cursor.getString(9));
+                note.setUserId(Long.parseLong(cursor.getString(8)));
+                note.setIsSync(Integer.parseInt(cursor.getString(10)));
+                notes.add(note);
             }
         }
         NotificationHelper.showNotification(getActivity(), notes);

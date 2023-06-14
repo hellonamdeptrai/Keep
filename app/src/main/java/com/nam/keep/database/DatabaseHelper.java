@@ -56,6 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 DataBaseContract.NoteEntry.COLUMN_DEADLINE + " DATETIME, " +
                 DataBaseContract.NoteEntry.COLUMN_COLOR + " INTEGER, " +
                 DataBaseContract.NoteEntry.COLUMN_BACKGROUND + " BLOB, " +
+                DataBaseContract.NoteEntry.COLUMN_USER_ID + " INTEGER, " +
                 DataBaseContract.NoteEntry.COLUMN_UPDATED_AT + " TIMESTAMP, " +
                 DataBaseContract.NoteEntry.COLUMN_IS_SYNC + " INTEGER );";
         sqLiteDatabase.execSQL(queryNote);
@@ -197,12 +198,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DataBaseContract.NoteEntry.COLUMN_DEADLINE, note.getDeadline());
         values.put(DataBaseContract.NoteEntry.COLUMN_COLOR, note.getColor());
         values.put(DataBaseContract.NoteEntry.COLUMN_BACKGROUND, note.getBackground());
-        values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdatedAt());
         values.put(DataBaseContract.NoteEntry.COLUMN_USER_ID, note.getUserId());
-        values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdated_at());
+        values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdatedAt());
+        values.put(DataBaseContract.NoteEntry.COLUMN_IS_SYNC, note.getIsSync());
         long insertId = database.insert(DataBaseContract.NoteEntry.TABLE, null, values);
         if(insertId == -1){
-            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Failed note", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -217,7 +218,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DataBaseContract.NoteEntry.COLUMN_COLOR, note.getColor());
         values.put(DataBaseContract.NoteEntry.COLUMN_BACKGROUND, note.getBackground());
         values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdatedAt());
-        values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdated_at());
+//        values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdated_at());
         long insertId = database.update(DataBaseContract.NoteEntry.TABLE, values, DataBaseContract.NoteEntry.COLUMN_ID+
                 "=?", new String[]{note.getId()+""});
         if(insertId == -1){

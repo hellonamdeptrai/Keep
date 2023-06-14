@@ -3,6 +3,8 @@ package com.nam.keep.ui.note;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -230,6 +232,25 @@ public class AddNoteActivity extends AppCompatActivity {
                         Intent intent = new Intent(AddNoteActivity.this, LabelActivity.class);
                         intent.putExtra("labelListEditIntent", listLabelNote);
                         startActivityForResult(intent, 14);
+                    }
+                });
+                bottomSheetDialog.findViewById(R.id.add_share_note).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        bottomSheetDialog.dismiss();
+                        // Tạo Intent để chia sẻ văn bản
+                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                        shareIntent.setType("text/plain");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, mTitle.getText() +"\n\n" + mContent.getText());
+
+                        // Kiểm tra và chọn ứng dụng chia sẻ
+                        PackageManager packageManager = getPackageManager();
+                        List<ResolveInfo> activities = packageManager.queryIntentActivities(shareIntent, 0);
+                        if (activities.size() > 0) {
+                            // Mở hộp thoại chọn ứng dụng chia sẻ
+                            Intent chooserIntent = Intent.createChooser(shareIntent, "Chia sẻ qua");
+                            startActivity(chooserIntent);
+                        }
                     }
                 });
             }
@@ -766,17 +787,19 @@ public class AddNoteActivity extends AppCompatActivity {
             if (isCheckBoxOrContent == 1) {
                 editTextAddIdCheckBox();
             }
-            dataSource.createNote(new Note(
-                    dataSource.getCountNote(),
-                    mTitle.getText().toString(),
-                    mContent.getText().toString(),
-                    isCheckBoxOrContent,
-                    dateTimePicker != null ? dateTimePicker.toString() : "",
-                    colorNote,
-                    imageBackground != null ? Objects.requireNonNull(byteArrayOutputStream).toByteArray() : null,
-                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()),
-                    1
-            ));
+
+            Note note = new Note();
+            note.setIndex(dataSource.getCountNote());
+            note.setTitle(mTitle.getText().toString());
+            note.setContent(mContent.getText().toString());
+            note.setIsCheckBoxOrContent(isCheckBoxOrContent);
+            note.setDeadline(dateTimePicker != null ? dateTimePicker.toString() : "");
+            note.setColor(colorNote);
+            note.setBackground(imageBackground != null ? Objects.requireNonNull(byteArrayOutputStream).toByteArray() : null);
+            note.setUpdatedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
+            note.setUserId(1);
+            note.setIsSync(0);
+            dataSource.createNote(note);
 
             long idNewNote = dataSource.getNoteIdNew();
 
