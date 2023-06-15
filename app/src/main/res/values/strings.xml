@@ -59,4 +59,5 @@
     <string name="edit_text_search_email">Nhập email</string>
 
     <string name="button_save_profile">Cập nhật thông tin</string>
+    <string name="text_logout">Đăng xuất</string>
 </resources>

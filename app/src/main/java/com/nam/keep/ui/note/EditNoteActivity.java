@@ -17,8 +17,10 @@
 package com.nam.keep.ui.note;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
@@ -157,6 +159,8 @@ public class EditNoteActivity extends AppCompatActivity {
     private Stack<CharSequence> undoStack;
     private Stack<CharSequence> redoStack;
     private boolean isUndoOrRedo;
+    SharedPreferences sharedPreferences;
+    long idUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,6 +210,9 @@ public class EditNoteActivity extends AppCompatActivity {
         undoStack = new Stack<>();
         redoStack = new Stack<>();
         isUndoOrRedo = false;
+
+        sharedPreferences = getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
+        idUser = sharedPreferences.getLong("tokenable_id", 0);
 
         mSheetAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -327,6 +334,7 @@ public class EditNoteActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 isSaveData = false;
                                 dataSource.deleteNote(idNote);
+                                dataSource.detachNote(idNote, idUser);
                                 dataSource.deleteFileInNote(idNote);
                                 dataSource.detachLabel(idNote);
                                 dataSource.detachUser(idNote);
@@ -354,6 +362,7 @@ public class EditNoteActivity extends AppCompatActivity {
                         bottomSheetDialog.dismiss();
                         Intent intent = new Intent(EditNoteActivity.this, UserActivity.class);
                         intent.putExtra("userListEditIntent", listUserNote);
+                        intent.putExtra("idUserNote", noteData.getUserId());
                         startActivityForResult(intent, 15);
                     }
                 });
@@ -560,7 +569,15 @@ public class EditNoteActivity extends AppCompatActivity {
         }
         if (requestCode == 15 && resultCode == RESULT_OK) {
             if (data != null && data.hasExtra("userListIntent")) {
-                listUserNote = data.getParcelableArrayListExtra("userListIntent");
+                User userTemp = new User();
+                for (User user : listUserNote) {
+                    if (user.getId() == noteData.getUserId()) {
+                        userTemp = user;
+                    }
+                }
+                listUserNote.clear();
+                listUserNote.add(userTemp);
+                listUserNote.addAll(data.getParcelableArrayListExtra("userListIntent"));
                 mMainUser.setLayoutManager(new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.HORIZONTAL));
                 RecyclerUserNoteAdapter adapter1 = new RecyclerUserNoteAdapter(listUserNote);
                 mMainUser.setAdapter(adapter1);

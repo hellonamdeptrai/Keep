@@ -5,9 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -16,9 +14,6 @@ import android.widget.Button;
 import com.nam.keep.R;
 import com.nam.keep.database.DatabaseHelper;
 import com.nam.keep.model.User;
-import com.nam.keep.ui.label.LabelActivity;
-import com.nam.keep.ui.label.adapter.LabelAddNoteAdapter;
-import com.nam.keep.ui.label.helper.ILabelAddNoteClick;
 import com.nam.keep.ui.user.adapter.UserAddNoteAdapter;
 import com.nam.keep.ui.user.helper.UserAddNoteClick;
 
@@ -33,7 +28,6 @@ public class UserActivity extends AppCompatActivity {
     DatabaseHelper myDatabase;
     ArrayList<User> list = new ArrayList<>();
     ArrayList<User> userList = new ArrayList<>();
-    SharedPreferences sharedPreferences;
     long idUser;
 
     @Override
@@ -43,11 +37,10 @@ public class UserActivity extends AppCompatActivity {
         if (getIntent().getParcelableArrayListExtra("userListEditIntent") != null) {
             userList.addAll(getIntent().getParcelableArrayListExtra("userListEditIntent"));
         }
+        idUser = getIntent().getLongExtra("idUserNote", 0);
 
         buttonBack = findViewById(R.id.button_back_user);
 
-        sharedPreferences = getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
-        idUser = sharedPreferences.getLong("tokenable_id", 0);
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

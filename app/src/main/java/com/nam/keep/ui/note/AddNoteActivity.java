@@ -2,8 +2,10 @@ package com.nam.keep.ui.note;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
@@ -115,6 +117,8 @@ public class AddNoteActivity extends AppCompatActivity {
     private Stack<CharSequence> undoStack;
     private Stack<CharSequence> redoStack;
     private boolean isUndoOrRedo;
+    SharedPreferences sharedPreferences;
+    long idUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +153,9 @@ public class AddNoteActivity extends AppCompatActivity {
         undoStack = new Stack<>();
         redoStack = new Stack<>();
         isUndoOrRedo = false;
+
+        sharedPreferences = getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
+        idUser = sharedPreferences.getLong("tokenable_id", 0);
 
         mSheetAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -846,11 +853,16 @@ public class AddNoteActivity extends AppCompatActivity {
             note.setColor(colorNote);
             note.setBackground(imageBackground != null ? Objects.requireNonNull(byteArrayOutputStream).toByteArray() : null);
             note.setUpdatedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
-            note.setUserId(1);
+            note.setUserId(idUser);
             note.setIsSync(0);
             dataSource.createNote(note);
 
             long idNewNote = dataSource.getNoteIdNew();
+
+            // attach note user
+            if (idUser != 0) {
+                dataSource.attachUser(idNewNote, idUser);
+            }
 
             for (String pathFile : listPathRecorder) {
                 dataSource.createFile(new FileModel(

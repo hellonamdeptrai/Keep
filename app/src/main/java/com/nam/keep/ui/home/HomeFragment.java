@@ -1,7 +1,9 @@
 package com.nam.keep.ui.home;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -55,6 +57,8 @@ public class HomeFragment extends Fragment {
     MyRecyclerAdapter adapter;
     ItemTouchHelper itemTouchHelper;
     DatabaseHelper myDatabase;
+    SharedPreferences sharedPreferences;
+    long idUser;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -64,6 +68,10 @@ public class HomeFragment extends Fragment {
         recyclerView = binding.mainRecycler;
         swipeRefreshLayout = root.findViewById(R.id.refresh_note_home);
         myDatabase = new DatabaseHelper(getActivity());
+
+        sharedPreferences = getContext().getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
+        idUser = sharedPreferences.getLong("tokenable_id", 0);
+
         init();
         generateItem();
 
@@ -152,7 +160,13 @@ public class HomeFragment extends Fragment {
 
     private ArrayList<Note> getListNotes() {
         ArrayList<Note> notes = new ArrayList<>();
-        Cursor cursor = myDatabase.getNote();
+        Cursor cursor;
+        if (idUser == 0) {
+            cursor = myDatabase.getNote();
+        } else {
+            cursor = myDatabase.getNoteUser(idUser);
+        }
+
         if(cursor.getCount() != 0){
             while (cursor.moveToNext()){
                 Note note = new Note();

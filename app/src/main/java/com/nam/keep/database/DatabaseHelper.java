@@ -218,7 +218,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getNote(){
-        String query = "SELECT * FROM " + DataBaseContract.NoteEntry.TABLE + " ORDER BY _id DESC";
+        String query = "SELECT * FROM " + DataBaseContract.NoteEntry.TABLE + " ORDER BY "+
+                DataBaseContract.NoteEntry.COLUMN_INDEX+" DESC";
         database = this.getReadableDatabase();
 
         Cursor cursor = null;
@@ -492,6 +493,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 DataBaseContract.NoteHasUserEntry.TABLE + "." + DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID +
                 " WHERE " + DataBaseContract.NoteHasUserEntry.TABLE +"." +DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID + " = " +
                 idNote;
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+    public void detachNote(long idNote, long idUser){
+        database = this.getWritableDatabase();
+        String selection = DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID + "=? AND " +
+                DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID + "=?";
+        String[] selectionArgs = {String.valueOf(idUser), String.valueOf(idNote)};
+        long result = database.delete(DataBaseContract.NoteHasUserEntry.TABLE, selection, selectionArgs);
+        if(result == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public Cursor getNoteUser(long idUser){
+        String query = "SELECT " + DataBaseContract.NoteEntry.TABLE + ".* FROM " + DataBaseContract.NoteHasUserEntry.TABLE +
+                " JOIN " + DataBaseContract.NoteEntry.TABLE + " ON " +
+                DataBaseContract.NoteEntry.TABLE +"." +DataBaseContract.NoteEntry.COLUMN_ID + " = " +
+                DataBaseContract.NoteHasUserEntry.TABLE + "." + DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID +
+                " WHERE " + DataBaseContract.NoteHasUserEntry.TABLE +"." +DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID + " = " +
+                idUser;
         database = this.getReadableDatabase();
 
         Cursor cursor = null;

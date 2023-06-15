@@ -15,12 +15,14 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.makeramen.roundedimageview.RoundedImageView;
+import com.nam.keep.MainActivity;
 import com.nam.keep.R;
 import com.nam.keep.database.DataBaseContract;
 import com.nam.keep.database.DatabaseHelper;
@@ -42,6 +44,7 @@ public class ProfileActivity extends AppCompatActivity {
     RoundedImageView avatar;
     EditText nameProfile, emailProfile;
     Button btnUpdate;
+    TextView textLogout;
 
     // data
     private DatabaseHelper dataSource;
@@ -66,6 +69,7 @@ public class ProfileActivity extends AppCompatActivity {
         nameProfile = findViewById(R.id.edit_text_name_profile);
         emailProfile = findViewById(R.id.edit_text_email_profile);
         btnUpdate = findViewById(R.id.btnUpdateProfile);
+        textLogout = findViewById(R.id.txtLogout);
 
 
         sharedPreferences = getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
@@ -123,6 +127,21 @@ public class ProfileActivity extends AppCompatActivity {
                 dataSource.updateUser(userDataUpdate);
                 finish();
                 Toast.makeText(ProfileActivity.this, "Cập nhật thông tin thành công", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        textLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.clear();
+                editor.apply();
+
+                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
             }
         });
     }
