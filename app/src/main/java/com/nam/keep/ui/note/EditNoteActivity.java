@@ -322,6 +322,9 @@ public class EditNoteActivity extends AppCompatActivity {
                         }
                     }
                 });
+                if (idUser != noteData.getUserId()) {
+                    bottomSheetDialog.findViewById(R.id.add_delete_note).setVisibility(View.GONE);
+                }
                 bottomSheetDialog.findViewById(R.id.add_delete_note).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
