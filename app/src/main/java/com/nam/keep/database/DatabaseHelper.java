@@ -83,8 +83,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " (" + DataBaseContract.LabelEntry.COLUMN_ID +
                 " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 DataBaseContract.LabelEntry.COLUMN_TITLE + " TEXT, " +
-                DataBaseContract.LabelEntry.COLUMN_UPDATED_AT + " , " +
-                DataBaseContract.LabelEntry.COLUMN_IS_SYNC + " INTEGER );";
+                DataBaseContract.LabelEntry.COLUMN_UPDATED_AT + " TIMESTAMP, " +
+                DataBaseContract.LabelEntry.COLUMN_IS_SYNC + " INTEGER, " +
+                DataBaseContract.LabelEntry.COLUMN_USER_ID + " INTEGER );";
         sqLiteDatabase.execSQL(queryLabel);
 
         String queryNoteHasLabel = "CREATE TABLE " + DataBaseContract.NoteHasLabelEntry.TABLE +
@@ -390,14 +391,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(DataBaseContract.LabelEntry.COLUMN_TITLE, label.getTitle());
         values.put(DataBaseContract.LabelEntry.COLUMN_UPDATED_AT, label.getUpdated_at());
+        values.put(DataBaseContract.LabelEntry.COLUMN_USER_ID, label.getUserId());
         long insertId = database.insert(DataBaseContract.LabelEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public Cursor getLabel(){
-        String query = "SELECT * FROM " + DataBaseContract.LabelEntry.TABLE + " ORDER BY _id DESC";
+    public Cursor getLabel(long userId){
+        String query = "SELECT * FROM " + DataBaseContract.LabelEntry.TABLE + " WHERE " +
+                DataBaseContract.LabelEntry.COLUMN_USER_ID + " = " + userId + " ORDER BY " +
+                DataBaseContract.LabelEntry.COLUMN_ID + " DESC";
         database = this.getReadableDatabase();
 
         Cursor cursor = null;

@@ -187,6 +187,7 @@ public class ApiClient {
                 assert userData != null;
 
                 User userCreate = new User();
+                userCreate.setId(userData.getId());
                 userCreate.setName(userData.getName());
                 userCreate.setAvatar(userData.getAvatar() != null ? userData.getAvatar()  : "");
                 userCreate.setEmail(userData.getEmail());

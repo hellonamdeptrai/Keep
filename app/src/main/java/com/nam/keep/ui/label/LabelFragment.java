@@ -1,5 +1,7 @@
 package com.nam.keep.ui.label;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -24,8 +26,11 @@ import com.nam.keep.model.Label;
 import com.nam.keep.ui.label.adapter.LabelAdapter;
 import com.nam.keep.ui.label.helper.ILabelClick;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class LabelFragment extends Fragment {
 
@@ -38,6 +43,8 @@ public class LabelFragment extends Fragment {
 
     // data
     DatabaseHelper myDatabase;
+    SharedPreferences sharedPreferences;
+    long idUser;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -52,6 +59,9 @@ public class LabelFragment extends Fragment {
 
         myDatabase = new DatabaseHelper(getActivity());
 
+        sharedPreferences = getContext().getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
+        idUser = sharedPreferences.getLong("tokenable_id", 0);
+
         getListLabel();
 
         buttonAddLabel.setOnClickListener(new View.OnClickListener() {
@@ -61,9 +71,11 @@ public class LabelFragment extends Fragment {
                     editTextLabel.setError("Tên nhãn không được để trống!");
                     return;
                 }
-                myDatabase.createLabel(new Label(
-                        editTextLabel.getText().toString()
-                ));
+                Label label = new Label();
+                label.setTitle(editTextLabel.getText().toString());
+                label.setUpdated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
+                label.setUserId(idUser);
+                myDatabase.createLabel(label);
                 getListLabel();
                 editTextLabel.setText("");
             }
@@ -73,7 +85,7 @@ public class LabelFragment extends Fragment {
 
     private void getListLabel() {
         List<Label> list = new ArrayList<>();
-        Cursor cursor = myDatabase.getLabel();
+        Cursor cursor = myDatabase.getLabel(idUser);
         if(cursor.getCount() != 0){
             while (cursor.moveToNext()){
                 list.add(new Label(

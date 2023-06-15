@@ -9,6 +9,7 @@ public class Label implements Parcelable {
     private long id;
     private String title;
     private int isChecked;
+    private long userId;
 
     // api
     private String created_at;
@@ -104,5 +105,13 @@ public class Label implements Parcelable {
 
     public void setUpdated_at(String updated_at) {
         this.updated_at = updated_at;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 }

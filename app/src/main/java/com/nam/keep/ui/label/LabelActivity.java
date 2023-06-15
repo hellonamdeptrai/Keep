@@ -6,7 +6,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -35,6 +37,8 @@ public class LabelActivity extends AppCompatActivity {
     DatabaseHelper myDatabase;
     ArrayList<Label> list = new ArrayList<>();
     ArrayList<Label> labelList = new ArrayList<>();
+    SharedPreferences sharedPreferences;
+    long idUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,9 @@ public class LabelActivity extends AppCompatActivity {
         }
 
         buttonBack = findViewById(R.id.button_back_label);
+
+        sharedPreferences = getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
+        idUser = sharedPreferences.getLong("tokenable_id", 0);
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,7 +78,7 @@ public class LabelActivity extends AppCompatActivity {
     }
 
     private void getListLabel() {
-        Cursor cursor = myDatabase.getLabel();
+        Cursor cursor = myDatabase.getLabel(idUser);
         if(cursor.getCount() != 0){
             for (int i = 0; cursor.moveToNext(); i++) {
                 list.add(new Label(
