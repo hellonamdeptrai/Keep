@@ -103,10 +103,12 @@ public class LabelFragment extends Fragment {
 
             @Override
             public void OnClickEditDone(int position, EditText editText) {
-                myDatabase.updateLabel(new Label(
-                        list.get(position).getId(),
-                        editText.getText().toString()
-                ));
+                Label label = new Label();
+                label.setId(list.get(position).getId());
+                label.setTitle(editTextLabel.getText().toString());
+                label.setUpdated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
+                label.setIsSync(0);
+                myDatabase.updateLabel(label);
                 getListLabel();
             }
 

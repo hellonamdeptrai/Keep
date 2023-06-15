@@ -3,6 +3,8 @@ package com.nam.keep.api;
 import com.nam.keep.model.AllData;
 import com.nam.keep.model.User;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -19,4 +21,7 @@ public interface ApiService {
 
     @GET("sync")
     Call<AllData> getAllData();
+
+    @POST("sync/user")
+    Call<Void> uploadUser(@Body List<User> userList);
 }

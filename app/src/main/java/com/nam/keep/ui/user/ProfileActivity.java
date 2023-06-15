@@ -123,7 +123,7 @@ public class ProfileActivity extends AppCompatActivity {
                 userDataUpdate.setName(nameProfile.getText().toString());
                 userDataUpdate.setAvatar(newPath);
                 userDataUpdate.setUpdated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
-                userDataUpdate.setIsSync(1);
+                userDataUpdate.setIsSync(0);
                 dataSource.updateUser(userDataUpdate);
                 finish();
                 Toast.makeText(ProfileActivity.this, "Cập nhật thông tin thành công", Toast.LENGTH_SHORT).show();
@@ -136,6 +136,8 @@ public class ProfileActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.clear();
                 editor.apply();
+
+//                deleteAppData(getApplicationContext());
 
                 Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -185,5 +187,44 @@ public class ProfileActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return file.getAbsolutePath();
+    }
+
+    public void deleteAppData(Context context) {
+        try {
+            // Xóa cơ sở dữ liệu
+            context.deleteDatabase("NamKeep.db");
+
+            // Xóa thư mục "data" và tất cả thư mục con
+            File dataDir = context.getFilesDir().getParentFile();
+            if (dataDir != null && dataDir.isDirectory()) {
+                deleteRecursive(dataDir);
+            }
+
+            // Xóa cache của ứng dụng
+            File cacheFolder = context.getCacheDir();
+            if (cacheFolder != null && cacheFolder.isDirectory()) {
+                File[] files = cacheFolder.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        file.delete();
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteRecursive(File file) {
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File child : files) {
+                    deleteRecursive(child);
+                }
+            }
+        }
+        file.delete();
     }
 }

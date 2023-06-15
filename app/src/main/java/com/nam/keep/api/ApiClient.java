@@ -18,11 +18,16 @@ import com.nam.keep.model.Note;
 import com.nam.keep.model.User;
 import com.nam.keep.utils.UtilsFunction;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -76,7 +81,7 @@ public class ApiClient {
                 assert allData != null;
 
                 getUserApi(allData);
-
+                uploadDataUserApi(context);
                 lottieAnimationView.setVisibility(View.GONE);
                 frameLayout.setVisibility(View.VISIBLE);
                 Toast.makeText(context, "Đồng bộ thành công", Toast.LENGTH_SHORT).show();
@@ -96,16 +101,25 @@ public class ApiClient {
         Cursor cursor = myDatabase.getUser();
         if(cursor.getCount() != 0){
             myDatabase.deleteUserSync(1);
-            for (User user: allData.getUsers()) {
-                User userCreate = new User();
-                userCreate.setId(user.getId());
-                userCreate.setName(user.getName());
-                userCreate.setAvatar(user.getAvatar() != null ? user.getAvatar()  : "");
-                userCreate.setEmail(user.getEmail());
-                userCreate.setPassword("");
-                userCreate.setUpdated_at(user.getUpdated_at());
-                userCreate.setIsSync(1);
-                myDatabase.createUser(userCreate);
+            while (cursor.moveToNext()) {
+                boolean userExists = false;
+                for (User user : allData.getUsers()) {
+                    if (Long.parseLong(cursor.getString(0)) == user.getId()) {
+                        userExists = true;
+                        break;
+                    }
+                }
+                if (!userExists) {
+                    User userCreate = new User();
+                    userCreate.setId(cursor.getLong(0));
+                    userCreate.setName(cursor.getString(1));
+                    userCreate.setAvatar(cursor.getString(2) != null ? cursor.getString(2) : "");
+                    userCreate.setEmail(cursor.getString(3));
+                    userCreate.setPassword(cursor.getString(4));
+                    userCreate.setUpdated_at(cursor.getString(5));
+                    userCreate.setIsSync(1);
+                    myDatabase.createUser(userCreate);
+                }
             }
         } else {
             for (User user: allData.getUsers()) {
@@ -114,7 +128,7 @@ public class ApiClient {
                 userCreate.setName(user.getName());
                 userCreate.setAvatar(user.getAvatar() != null ? user.getAvatar()  : "");
                 userCreate.setEmail(user.getEmail());
-                userCreate.setPassword("");
+                userCreate.setPassword(user.getPassword());
                 userCreate.setUpdated_at(user.getUpdated_at());
                 userCreate.setIsSync(1);
                 myDatabase.createUser(userCreate);
@@ -191,7 +205,7 @@ public class ApiClient {
                 userCreate.setName(userData.getName());
                 userCreate.setAvatar(userData.getAvatar() != null ? userData.getAvatar()  : "");
                 userCreate.setEmail(userData.getEmail());
-                userCreate.setPassword("");
+                userCreate.setPassword(userData.getPassword());
                 userCreate.setUpdated_at(userData.getUpdated_at());
                 userCreate.setIsSync(1);
                 myDatabase.createUser(userCreate);
@@ -235,6 +249,35 @@ public class ApiClient {
             public void onFailure(Call<User> call, Throwable t) {
                 // Xử lý lỗi kết nối
                 Toast.makeText(context, "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public void uploadDataUserApi(Context context) {
+        List<User> userList = new ArrayList<>();
+        Cursor cursor = myDatabase.getUser();
+        if(cursor.getCount() != 0){
+            while (cursor.moveToNext()) {
+                User userCreate = new User();
+//                userCreate.setId(cursor.getLong(0));
+                userCreate.setName(cursor.getString(1));
+                userCreate.setAvatar(cursor.getString(2) != null ? cursor.getString(2) : "");
+                userCreate.setEmail(cursor.getString(3));
+                userCreate.setPassword(cursor.getString(4));
+                userCreate.setUpdated_at(cursor.getString(5));
+                userList.add(userCreate);
+            }
+        }
+        Call<Void> call = apiService.uploadUser(userList);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast.makeText(context, "Tải lên dữ liệu người dùng thành công", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(context, "Lỗi tải lên dữ liệu người dùng", Toast.LENGTH_SHORT).show();
             }
         });
     }

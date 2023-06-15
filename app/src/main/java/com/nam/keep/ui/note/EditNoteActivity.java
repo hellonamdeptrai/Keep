@@ -1058,6 +1058,7 @@ public class EditNoteActivity extends AppCompatActivity {
             note.setColor(colorNote);
             note.setBackground(imageBackground != null ? Objects.requireNonNull(byteArrayOutputStream).toByteArray() : null);
             note.setUpdatedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
+            note.setIsSync(0);
             dataSource.updateNote(note);
 
             dataSource.deleteFileInNote(idNote);

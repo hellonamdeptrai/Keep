@@ -260,6 +260,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DataBaseContract.NoteEntry.COLUMN_COLOR, note.getColor());
         values.put(DataBaseContract.NoteEntry.COLUMN_BACKGROUND, note.getBackground());
         values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdatedAt());
+        values.put(DataBaseContract.NoteEntry.COLUMN_IS_SYNC, note.getIsSync());
 //        values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdated_at());
         long insertId = database.update(DataBaseContract.NoteEntry.TABLE, values, DataBaseContract.NoteEntry.COLUMN_ID+
                 "=?", new String[]{note.getId()+""});
@@ -417,6 +418,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         values.put(DataBaseContract.LabelEntry.COLUMN_TITLE, label.getTitle());
         values.put(DataBaseContract.LabelEntry.COLUMN_UPDATED_AT, label.getUpdated_at());
+        values.put(DataBaseContract.LabelEntry.COLUMN_IS_SYNC, label.getIsSync());
 
         long insertId = database.update(DataBaseContract.LabelEntry.TABLE, values, "_id=?", new String[]{label.getId()+""});
         if(insertId == -1){
