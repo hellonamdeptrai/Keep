@@ -230,6 +230,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    public Cursor getNoteReminder(){
+        String query = "SELECT * FROM " + DataBaseContract.NoteEntry.TABLE +
+                " WHERE " + DataBaseContract.NoteEntry.COLUMN_DEADLINE + " IS NOT NULL" +
+                " AND " + DataBaseContract.NoteEntry.COLUMN_DEADLINE + " <> ''" +
+                " ORDER BY " + DataBaseContract.NoteEntry.COLUMN_INDEX + " DESC";
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
     public void createNote(Note note) {
         database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -526,6 +540,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 DataBaseContract.NoteHasUserEntry.TABLE + "." + DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID +
                 " WHERE " + DataBaseContract.NoteHasUserEntry.TABLE +"." +DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID + " = " +
                 idUser;
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+    public Cursor getNoteReminderUser(long idUser){
+        String query = "SELECT " + DataBaseContract.NoteEntry.TABLE + ".* FROM " + DataBaseContract.NoteHasUserEntry.TABLE +
+                " JOIN " + DataBaseContract.NoteEntry.TABLE + " ON " +
+                DataBaseContract.NoteEntry.TABLE +"." +DataBaseContract.NoteEntry.COLUMN_ID + " = " +
+                DataBaseContract.NoteHasUserEntry.TABLE + "." + DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID +
+                " WHERE " + DataBaseContract.NoteHasUserEntry.TABLE + "." + DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID + " = " +
+                idUser +
+                " AND " + DataBaseContract.NoteEntry.COLUMN_DEADLINE + " IS NOT NULL" +
+                " AND " + DataBaseContract.NoteEntry.COLUMN_DEADLINE + " <> ''";
         database = this.getReadableDatabase();
 
         Cursor cursor = null;

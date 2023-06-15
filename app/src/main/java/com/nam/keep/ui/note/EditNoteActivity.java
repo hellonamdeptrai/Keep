@@ -410,20 +410,20 @@ public class EditNoteActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        if (!undoStack.isEmpty()) {
-            undoStack.pop();
-        }
-
-        if (!undoStack.isEmpty()) {
-            CharSequence previousText = undoStack.peek();
-            isUndoOrRedo = true;
-            mContent.setText(previousText);
-            mContent.setSelection(previousText.length());
-            isUndoOrRedo = false;
-        }
-    }
+//    @Override
+//    public void onBackPressed() {
+//        if (!undoStack.isEmpty()) {
+//            undoStack.pop();
+//        }
+//
+//        if (!undoStack.isEmpty()) {
+//            CharSequence previousText = undoStack.peek();
+//            isUndoOrRedo = true;
+//            mContent.setText(previousText);
+//            mContent.setSelection(previousText.length());
+//            isUndoOrRedo = false;
+//        }
+//    }
 
     private void undo() {
         if (!undoStack.isEmpty()) {

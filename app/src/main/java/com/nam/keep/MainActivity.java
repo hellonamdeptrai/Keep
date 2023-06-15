@@ -8,9 +8,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 
+import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
+    private BottomAppBar bottomAppBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        bottomAppBar = findViewById(R.id.bottom_app_bar);
 
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +86,33 @@ public class MainActivity extends AppCompatActivity {
                 // Đóng drawer sau khi chọn một mục
                 drawer.closeDrawer(GravityCompat.START);
                 return true;
+            }
+        });
+
+        bottomAppBar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent intentNote = new Intent(MainActivity.this, AddNoteActivity.class);
+                switch (item.getItemId()) {
+                    case R.id.home_add_check_box:
+                        AddNoteActivity.isOpenCheckBox = true;
+                        startActivity(intentNote);
+                        return true;
+                    case R.id.home_add_brush:
+                        AddNoteActivity.isOpenAddBrush = true;
+                        startActivity(intentNote);
+                        return true;
+                    case R.id.home_add_mic:
+                        AddNoteActivity.isOpenAddMic = true;
+                        startActivity(intentNote);
+                        return true;
+                    case R.id.home_add_image:
+                        AddNoteActivity.isOpenAddImage = true;
+                        startActivity(intentNote);
+                        return true;
+                    default:
+                        return true;
+                }
             }
         });
     }

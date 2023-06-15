@@ -120,6 +120,12 @@ public class AddNoteActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     long idUser;
 
+    // open
+    public static boolean isOpenCheckBox = false;
+    public static boolean isOpenAddImage = false;
+    public static boolean isOpenAddBrush = false;
+    public static boolean isOpenAddMic = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -342,22 +348,42 @@ public class AddNoteActivity extends AppCompatActivity {
                 redo();
             }
         });
+
+        // open
+        if (isOpenCheckBox){
+            changeTextToCheckbox();
+            isOpenCheckBox = false;
+        }
+        if (isOpenAddImage){
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(intent, 10);
+            isOpenAddImage = false;
+        }
+        if (isOpenAddBrush){
+            Intent intentLogin = new Intent(AddNoteActivity.this, PaintActivity.class);
+            startActivityForResult(intentLogin, 11);
+            isOpenAddBrush = false;
+        }
+        if (isOpenAddMic){
+            startSpeechRecognition();
+            isOpenAddMic = false;
+        }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (!undoStack.isEmpty()) {
-            undoStack.pop();
-        }
-
-        if (!undoStack.isEmpty()) {
-            CharSequence previousText = undoStack.peek();
-            isUndoOrRedo = true;
-            mContent.setText(previousText);
-            mContent.setSelection(previousText.length());
-            isUndoOrRedo = false;
-        }
-    }
+//    @Override
+//    public void onBackPressed() {
+//        if (!undoStack.isEmpty()) {
+//            undoStack.pop();
+//        }
+//
+//        if (!undoStack.isEmpty()) {
+//            CharSequence previousText = undoStack.peek();
+//            isUndoOrRedo = true;
+//            mContent.setText(previousText);
+//            mContent.setSelection(previousText.length());
+//            isUndoOrRedo = false;
+//        }
+//    }
 
     private void undo() {
         if (!undoStack.isEmpty()) {
