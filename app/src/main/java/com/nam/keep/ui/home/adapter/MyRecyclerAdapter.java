@@ -36,6 +36,7 @@ import com.nam.keep.ui.note.adapter.RecyclerUserNoteHomeAdapter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -169,15 +170,29 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
 
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
-//        Collections.swap(stringList, fromPosition, toPosition);
+        Note movedItem = notesList.get(fromPosition);
+        notesList.remove(fromPosition);
+        notesList.add(toPosition, movedItem);
         notifyItemMoved(fromPosition, toPosition);
         return true;
     }
 
     @Override
     public void inItemDismiss(int position) {
-//        stringList.remove(position);
+        notesList.remove(position);
         notifyItemRemoved(position);
+    }
+
+    @Override
+    public void moveDone() {
+        int i = notesList.size();
+        for (Note note : notesList) {
+            Note note1 = new Note();
+            note1.setId(note.getId());
+            note1.setIndex(i);
+            dataSource.updateNoteIndex(note1);
+            i--;
+        }
     }
 
     private List<Label> getListLabel(long idNote) {

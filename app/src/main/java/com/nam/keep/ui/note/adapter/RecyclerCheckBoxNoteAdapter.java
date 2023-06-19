@@ -118,6 +118,11 @@ public class RecyclerCheckBoxNoteAdapter extends RecyclerView.Adapter<RecyclerCh
         notifyItemRemoved(position);
     }
 
+    @Override
+    public void moveDone() {
+
+    }
+
     public class CheckBoxNoteViewHolder extends RecyclerView.ViewHolder {
         CheckBox checkBox;
         EditText editText;

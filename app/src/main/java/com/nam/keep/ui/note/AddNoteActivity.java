@@ -871,7 +871,7 @@ public class AddNoteActivity extends AppCompatActivity {
             }
 
             Note note = new Note();
-            note.setIndex(dataSource.getCountNote());
+            note.setIndex(idUser == 0 ? dataSource.getCountNote() + 1 : dataSource.getCountNoteUser(idUser) + 1);
             note.setTitle(mTitle.getText().toString());
             note.setContent(mContent.getText().toString());
             note.setIsCheckBoxOrContent(isCheckBoxOrContent);

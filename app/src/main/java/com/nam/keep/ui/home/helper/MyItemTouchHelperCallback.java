@@ -72,5 +72,6 @@ public class MyItemTouchHelperCallback extends ItemTouchHelper.Callback {
             ItemTouchHelperViewHolder itemTouchHelperViewHolder = (ItemTouchHelperViewHolder) viewHolder;
             itemTouchHelperViewHolder.onItemClear();
         }
+        adapter.moveDone();
     }
 }

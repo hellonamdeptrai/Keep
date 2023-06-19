@@ -266,7 +266,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void updateNote(Note note){
         database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(DataBaseContract.NoteEntry.COLUMN_INDEX, note.getIndex());
         values.put(DataBaseContract.NoteEntry.COLUMN_TITLE, note.getTitle());
         values.put(DataBaseContract.NoteEntry.COLUMN_CONTENT, note.getContent());
         values.put(DataBaseContract.NoteEntry.COLUMN_IS_CHECKBOX_OR_CONTENT, note.getIsCheckBoxOrContent());
@@ -276,6 +275,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdatedAt());
         values.put(DataBaseContract.NoteEntry.COLUMN_IS_SYNC, note.getIsSync());
 //        values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdated_at());
+        long insertId = database.update(DataBaseContract.NoteEntry.TABLE, values, DataBaseContract.NoteEntry.COLUMN_ID+
+                "=?", new String[]{note.getId()+""});
+        if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void updateNoteIndex(Note note){
+        database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.NoteEntry.COLUMN_INDEX, note.getIndex());
         long insertId = database.update(DataBaseContract.NoteEntry.TABLE, values, DataBaseContract.NoteEntry.COLUMN_ID+
                 "=?", new String[]{note.getId()+""});
         if(insertId == -1){
@@ -294,6 +304,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int getCountNote() {
         String query = "SELECT COUNT(*) FROM " + DataBaseContract.NoteEntry.TABLE;
+        database = this.getReadableDatabase();
+        int index = 0;
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        if(cursor.getCount() != 0){
+            while (cursor.moveToNext()){
+                index = Integer.parseInt(cursor.getString(0));
+            }
+        }
+        return index;
+    }
+
+    public int getCountNoteUser(long idUser) {
+        String query = "SELECT COUNT(*) FROM " + DataBaseContract.NoteHasUserEntry.TABLE +
+                " WHERE " + DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID + " = " + idUser;
         database = this.getReadableDatabase();
         int index = 0;
         Cursor cursor = null;
@@ -539,7 +566,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 DataBaseContract.NoteEntry.TABLE +"." +DataBaseContract.NoteEntry.COLUMN_ID + " = " +
                 DataBaseContract.NoteHasUserEntry.TABLE + "." + DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID +
                 " WHERE " + DataBaseContract.NoteHasUserEntry.TABLE +"." +DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID + " = " +
-                idUser;
+                idUser +
+                " ORDER BY " + DataBaseContract.NoteEntry.COLUMN_INDEX + " DESC";
         database = this.getReadableDatabase();
 
         Cursor cursor = null;

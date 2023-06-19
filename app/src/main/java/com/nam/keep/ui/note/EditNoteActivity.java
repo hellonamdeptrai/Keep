@@ -1053,7 +1053,6 @@ public class EditNoteActivity extends AppCompatActivity {
             }
             Note note = new Note();
             note.setId(idNote);
-            note.setIndex(dataSource.getCountNote());
             note.setTitle(mTitle.getText().toString());
             note.setContent(mContent.getText().toString());
             note.setIsCheckBoxOrContent(isCheckBoxOrContent);
