@@ -7,49 +7,84 @@
     tools:context=".ui.label.LabelFragment">
 
     <LinearLayout
-        android:id="@+id/linearLayout"
+        android:id="@+id/label_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingVertical="@dimen/padding_add_label"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingLeft="15dp"
-            android:paddingRight="5dp"
-            app:srcCompat="@drawable/ic_baseline_add_24"
-            android:layout_marginEnd="@dimen/normal_padding"/>
-
-        <EditText
-            android:id="@+id/add_text_label"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:hint="@string/edit_text_add_label"/>
-
-        <ImageButton
-            android:id="@+id/image_button_add_label"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_baseline_done_24" />
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/padding_add_label">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingLeft="15dp"
+                android:paddingRight="5dp"
+                app:srcCompat="@drawable/ic_baseline_add_24"
+                android:layout_marginEnd="@dimen/normal_padding"/>
+
+            <EditText
+                android:id="@+id/add_text_label"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:ems="10"
+                android:inputType="textPersonName"
+                android:hint="@string/edit_text_add_label"/>
+
+            <ImageButton
+                android:id="@+id/image_button_add_label"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_baseline_done_24" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/main_label"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingBottom="50dp" />
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/main_label"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp"
-        android:paddingBottom="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+    <LinearLayout
+        android:id="@+id/note_label_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/back_filter_label"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:paddingHorizontal="20dp"
+            app:srcCompat="@drawable/ic_baseline_arrow_back_24"
+            android:layout_marginEnd="@dimen/normal_padding"/>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/note_label_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/main_recycler_label_filter"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:clipToPadding="false"
+                android:paddingBottom="50dp"/>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

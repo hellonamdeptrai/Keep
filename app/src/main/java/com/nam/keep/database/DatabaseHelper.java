@@ -244,6 +244,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    public Cursor getNoteLabel(long idLabel){
+        String query = "SELECT " + DataBaseContract.NoteEntry.TABLE + ".* FROM " + DataBaseContract.NoteHasLabelEntry.TABLE +
+                " JOIN " + DataBaseContract.NoteEntry.TABLE + " ON " +
+                DataBaseContract.NoteEntry.TABLE +"." +DataBaseContract.NoteEntry.COLUMN_ID + " = " +
+                DataBaseContract.NoteHasLabelEntry.TABLE + "." + DataBaseContract.NoteHasLabelEntry.COLUMN_NOTE_ID +
+                " WHERE " + DataBaseContract.NoteHasLabelEntry.TABLE +"." +DataBaseContract.NoteHasLabelEntry.COLUMN_LABEL_ID + " = " +
+                idLabel;
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
     public void createNote(Note note) {
         database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
