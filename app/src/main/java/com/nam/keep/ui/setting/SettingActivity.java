@@ -56,6 +56,7 @@ public class SettingActivity extends AppCompatActivity {
         DatabaseHelper myDatabase;
         SharedPreferences sharedPreferences;
         String token;
+        Long idUser;
 
 
         @Override
@@ -64,6 +65,7 @@ public class SettingActivity extends AppCompatActivity {
 
             sharedPreferences = getContext().getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
             token = sharedPreferences.getString("token", "");
+            idUser = sharedPreferences.getLong("tokenable_id", 0);;
 
             themePreference = findPreference("pref_key_theme_mode");
             assert themePreference != null;
@@ -92,7 +94,7 @@ public class SettingActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 apiClient = new ApiClient(getContext());
-                                apiClient.getAll(getContext(), lottieAnimationView, frameLayout);
+                                apiClient.getAll(getContext(), lottieAnimationView, frameLayout, idUser);
                             }
                         });
                     }

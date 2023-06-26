@@ -24,6 +24,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.MainActivity;
 import com.nam.keep.R;
+import com.nam.keep.api.ApiClient;
 import com.nam.keep.database.DataBaseContract;
 import com.nam.keep.database.DatabaseHelper;
 import com.nam.keep.model.FileModel;
@@ -133,9 +134,8 @@ public class ProfileActivity extends AppCompatActivity {
         textLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.clear();
-                editor.apply();
+                ApiClient apiClient = new ApiClient(ProfileActivity.this);
+                apiClient.logoutUser();
 
 //                deleteAppData(getApplicationContext());
 

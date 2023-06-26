@@ -5,6 +5,10 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.io.File;
+
+import okhttp3.MultipartBody;
+
 public class User implements Parcelable {
     private long id;
     private String name;
@@ -23,6 +27,7 @@ public class User implements Parcelable {
     private String device_name;
     private long tokenable_id;
     private String token;
+    MultipartBody.Part avatarFile;
 
     protected User(Parcel in) {
         id = in.readLong();
@@ -188,6 +193,14 @@ public class User implements Parcelable {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public MultipartBody.Part getAvatarFile() {
+        return avatarFile;
+    }
+
+    public void setAvatarFile(MultipartBody.Part avatarFile) {
+        this.avatarFile = avatarFile;
     }
 
     @Override
