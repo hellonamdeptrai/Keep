@@ -1,6 +1,7 @@
 package com.nam.keep.api;
 
 import com.nam.keep.model.AllData;
+import com.nam.keep.model.Label;
 import com.nam.keep.model.User;
 
 import java.util.List;
@@ -33,7 +34,6 @@ public interface ApiService {
     @POST("sync/user")
     Call<ResponseBody> uploadUser(@Part("user") RequestBody user, @Part MultipartBody.Part avatars);
 
-    @GET
-    @Streaming
-    Call<ResponseBody> downloadFile(@Url String fileUrl);
+    @POST("sync/label")
+    Call<ResponseBody> uploadLabel(@Body AllData labels);
 }

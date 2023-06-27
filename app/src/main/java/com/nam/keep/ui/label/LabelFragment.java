@@ -101,6 +101,7 @@ public class LabelFragment extends Fragment {
                 label.setTitle(editTextLabel.getText().toString());
                 label.setUpdated_at(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
                 label.setUserId(idUser);
+                label.setIsSync(0);
                 myDatabase.createLabel(label);
                 getListLabel();
                 editTextLabel.setText("");

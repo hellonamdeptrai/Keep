@@ -248,10 +248,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getSearchNoteUser(String searchString, long idUser){
-        String query = "SELECT * FROM " + DataBaseContract.NoteEntry.TABLE +
-                " WHERE (" + DataBaseContract.NoteEntry.COLUMN_TITLE + " LIKE '%" + searchString + "%'" +
-                " OR " + DataBaseContract.NoteEntry.COLUMN_CONTENT + " LIKE '%" + searchString + "%')" +
-                " AND " + DataBaseContract.NoteEntry.COLUMN_USER_ID + " = " + idUser +
+        String query = "SELECT " + DataBaseContract.NoteEntry.TABLE + ".* FROM " + DataBaseContract.NoteHasUserEntry.TABLE +
+                " JOIN " + DataBaseContract.NoteEntry.TABLE + " ON " +
+                DataBaseContract.NoteEntry.TABLE +"." +DataBaseContract.NoteEntry.COLUMN_ID + " = " +
+                DataBaseContract.NoteHasUserEntry.TABLE + "." + DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID +
+                " WHERE " + DataBaseContract.NoteHasUserEntry.TABLE +"." +DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID + " = " +
+                idUser +
+                " AND (" + DataBaseContract.NoteEntry.TABLE + "." + DataBaseContract.NoteEntry.COLUMN_TITLE + " LIKE '%" + searchString + "%'" +
+                " OR " + DataBaseContract.NoteEntry.TABLE + "." + DataBaseContract.NoteEntry.COLUMN_CONTENT + " LIKE '%" + searchString + "%')" +
                 " ORDER BY " + DataBaseContract.NoteEntry.COLUMN_INDEX + " DESC";
 
         database = this.getReadableDatabase();
@@ -486,6 +490,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DataBaseContract.LabelEntry.COLUMN_TITLE, label.getTitle());
         values.put(DataBaseContract.LabelEntry.COLUMN_UPDATED_AT, label.getUpdated_at());
         values.put(DataBaseContract.LabelEntry.COLUMN_USER_ID, label.getUserId());
+        values.put(DataBaseContract.LabelEntry.COLUMN_IS_SYNC, label.getIsSync());
         long insertId = database.insert(DataBaseContract.LabelEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
@@ -688,6 +693,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long insertId = database.update(DataBaseContract.NoteEntry.TABLE, values, DataBaseContract.NoteEntry.COLUMN_ID+
                 "=?", new String[]{idNote+""});
         if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void deleteLabelSync(int isSync){
+        database = this.getWritableDatabase();
+        long result = database.delete(DataBaseContract.LabelEntry.TABLE,
+                DataBaseContract.LabelEntry.COLUMN_IS_SYNC+"=?", new String[]{isSync+""});
+        if(result == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
         }
     }

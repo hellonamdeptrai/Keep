@@ -28,6 +28,7 @@ import com.nam.keep.api.helper.MyAsyncTask;
 import com.nam.keep.database.DataBaseContract;
 import com.nam.keep.database.DatabaseHelper;
 import com.nam.keep.model.AllData;
+import com.nam.keep.model.Label;
 import com.nam.keep.model.Note;
 import com.nam.keep.model.User;
 import com.nam.keep.utils.UtilsFunction;
@@ -61,9 +62,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    private static final String BASE_URL = "http://192.168.50.143:8000/api/";
-    private static final String BASE_URL_STORAGE = "http://192.168.50.143:8000/storage/";
-    private static Retrofit retrofit;
+    private static final String BASE_URL = "http://172.20.10.7:8000/api/";
+    private static final String BASE_URL_STORAGE = "http://172.20.10.7:8000/storage/";
     private ApiService apiService;
     DatabaseHelper myDatabase;
     SharedPreferences sharedPreferences;
@@ -137,15 +137,65 @@ public class ApiClient {
 
                             @Override
                             public void onTaskComplete(String result) {
-                                lottieAnimationView.setVisibility(View.GONE);
-                                frameLayout.setVisibility(View.VISIBLE);
-                                Toast.makeText(context, "Đồng bộ thành công", Toast.LENGTH_SHORT).show();
+
                             }
                         });
                         myAsyncTask2.execute();
                     }
                 });
                 myAsyncTask.execute();
+
+                MyAsyncTask myAsyncTaskLabel = new MyAsyncTask(new AsyncTaskCompleteListener<String>() {
+                    @Override
+                    public void onDoInBackground() throws IOException {
+                        getLabelApi(allData, context);
+                    }
+
+                    @Override
+                    public void onTaskComplete(String result) {
+                        MyAsyncTask myAsyncTaskUploadLabel = new MyAsyncTask(new AsyncTaskCompleteListener<String>() {
+                            @Override
+                            public void onDoInBackground() {
+                                uploadDataLabelApi(context, idUser);
+                            }
+
+                            @Override
+                            public void onTaskComplete(String result) {
+                                lottieAnimationView.setVisibility(View.GONE);
+                                frameLayout.setVisibility(View.VISIBLE);
+                                Toast.makeText(context, "Đồng bộ thành công", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        myAsyncTaskUploadLabel.execute();
+                    }
+                });
+                myAsyncTaskLabel.execute();
+
+                MyAsyncTask myAsyncTaskNote = new MyAsyncTask(new AsyncTaskCompleteListener<String>() {
+                    @Override
+                    public void onDoInBackground() throws IOException {
+                        getNoteApi(allData, context);
+                    }
+
+                    @Override
+                    public void onTaskComplete(String result) {
+                        MyAsyncTask myAsyncTaskUploadNote = new MyAsyncTask(new AsyncTaskCompleteListener<String>() {
+                            @Override
+                            public void onDoInBackground() {
+                                uploadDataNoteApi(context, idUser);
+                            }
+
+                            @Override
+                            public void onTaskComplete(String result) {
+                                lottieAnimationView.setVisibility(View.GONE);
+                                frameLayout.setVisibility(View.VISIBLE);
+                                Toast.makeText(context, "Đồng bộ thành công", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        myAsyncTaskUploadNote.execute();
+                    }
+                });
+                myAsyncTaskNote.execute();
             }
 
             @Override
@@ -405,5 +455,71 @@ public class ApiClient {
             return url.substring(lastDotIndex + 1);
         }
         return "";
+    }
+
+    private void getLabelApi(AllData allData, Context context) {
+        Thread deleteThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                myDatabase.deleteLabelSync(1);
+            }
+        });
+        deleteThread.start();
+
+        try {
+            deleteThread.join(); // Đợi cho đến khi deleteThread hoàn thành
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        for (Label labelItem : allData.getLabels()) {
+            Label label = new Label();
+            label.setTitle(labelItem.getTitle());
+            label.setUpdated_at(labelItem.getUpdated_at());
+            label.setUserId(labelItem.getUserId());
+            label.setIsSync(1);
+            myDatabase.createLabel(label);
+        }
+    }
+
+    public void uploadDataLabelApi(Context context, long idUser) {
+        List<Label> labels = new ArrayList<>();
+        AllData allData = new AllData();
+        Cursor cursor = myDatabase.getLabel(idUser);
+        if (cursor.getCount() != 0) {
+            while (cursor.moveToNext()) {
+                Label label = new Label();
+                label.setTitle(cursor.getString(1));
+                labels.add(label);
+            }
+        }
+        allData.setLabels(labels);
+        Call<ResponseBody> call = apiService.uploadLabel(allData);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.v("SUCCESS", response.raw() + " ");
+                if (response.isSuccessful()) {
+                    // Xử lý thành công
+                    Toast.makeText(context, "Tải lên danh sách nhãn thành công", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Xử lý lỗi
+                    Toast.makeText(context, "Lỗi tải lên danh sách nhãn", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(context, "Lỗi tải lên dữ liệu nhãn", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getNoteApi(AllData allData, Context context) throws IOException {
+
+    }
+
+    public void uploadDataNoteApi(Context context, long idUser) {
+
     }
 }
