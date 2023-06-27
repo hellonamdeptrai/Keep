@@ -58,6 +58,7 @@
     <string name="button_set_picker">Lưu</string>
 
     <string name="edit_text_search_email">Nhập email</string>
+    <string name="edit_text_search_note">Tìm kiếm ghi chú</string>
 
     <string name="button_save_profile">Cập nhật thông tin</string>
     <string name="text_logout">Đăng xuất</string>

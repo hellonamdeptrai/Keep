@@ -232,6 +232,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    public Cursor getSearchNote(String searchString){
+        String query = "SELECT * FROM " + DataBaseContract.NoteEntry.TABLE +
+                " WHERE (" + DataBaseContract.NoteEntry.COLUMN_TITLE + " LIKE '%" + searchString + "%'" +
+                " OR " + DataBaseContract.NoteEntry.COLUMN_CONTENT + " LIKE '%" + searchString + "%')" +
+                " ORDER BY " + DataBaseContract.NoteEntry.COLUMN_INDEX + " DESC";
+
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+    public Cursor getSearchNoteUser(String searchString, long idUser){
+        String query = "SELECT * FROM " + DataBaseContract.NoteEntry.TABLE +
+                " WHERE (" + DataBaseContract.NoteEntry.COLUMN_TITLE + " LIKE '%" + searchString + "%'" +
+                " OR " + DataBaseContract.NoteEntry.COLUMN_CONTENT + " LIKE '%" + searchString + "%')" +
+                " AND " + DataBaseContract.NoteEntry.COLUMN_USER_ID + " = " + idUser +
+                " ORDER BY " + DataBaseContract.NoteEntry.COLUMN_INDEX + " DESC";
+
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
     public Cursor getNoteReminder(){
         String query = "SELECT * FROM " + DataBaseContract.NoteEntry.TABLE +
                 " WHERE " + DataBaseContract.NoteEntry.COLUMN_ARCHIVE + " = 0" +

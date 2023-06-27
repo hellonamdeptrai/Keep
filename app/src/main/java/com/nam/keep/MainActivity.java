@@ -25,6 +25,7 @@ import com.nam.keep.databinding.ActivityMainBinding;
 import com.nam.keep.notification.NotificationHelper;
 import com.nam.keep.ui.login.LoginActivity;
 import com.nam.keep.ui.note.AddNoteActivity;
+import com.nam.keep.ui.search.SearchActivity;
 import com.nam.keep.ui.setting.SettingActivity;
 import com.nam.keep.ui.user.ProfileActivity;
 
@@ -124,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         MenuItem item = menu.findItem(R.id.login_menu_item);
+        MenuItem itemSearch = menu.findItem(R.id.search_menu_item);
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
 
             @Override
@@ -137,6 +139,15 @@ public class MainActivity extends AppCompatActivity {
                     Intent intentProfile = new Intent(MainActivity.this, ProfileActivity.class);
                     startActivity(intentProfile);
                 }
+                return true;
+            }
+        });
+        itemSearch.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent intentSearch= new Intent(MainActivity.this, SearchActivity.class);
+                startActivity(intentSearch);
                 return true;
             }
         });
