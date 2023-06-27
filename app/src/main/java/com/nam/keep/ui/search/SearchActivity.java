@@ -27,6 +27,7 @@ import com.nam.keep.model.Note;
 import com.nam.keep.notification.NotificationHelper;
 import com.nam.keep.ui.home.adapter.MyRecyclerAdapter;
 import com.nam.keep.ui.home.helper.IClickItemDetail;
+import com.nam.keep.ui.home.helper.OnStartDangListener;
 import com.nam.keep.ui.note.EditNoteActivity;
 
 import java.util.ArrayList;
@@ -98,8 +99,26 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void generateItem() {
-        adapter = new MyRecyclerAdapter(this, viewHolder -> {
+        adapter = new MyRecyclerAdapter(this, new OnStartDangListener() {
+            @Override
+            public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
 
+            }
+
+            @Override
+            public void onItemMoveListener(int fromPosition, int toPosition) {
+
+            }
+
+            @Override
+            public void inItemDismissListener(int position) {
+
+            }
+
+            @Override
+            public void moveDoneListener() {
+
+            }
         }, new IClickItemDetail() {
             @Override
             public void onClickItemNote(View view, TextView title, TextView content,
@@ -110,7 +129,7 @@ public class SearchActivity extends AppCompatActivity {
                                         RoundedImageView imageBackgroundHome, Note note) {
                 Intent intent = new Intent(view.getContext(), EditNoteActivity.class);
                 intent.putExtra(EditNoteActivity.EXTRA_PARAM_ID, note.getId());
-                startActivityForResult(intent,0);
+                startActivityForResult(intent, 0);
             }
         });
         adapter.setData(getListNotes(searchTextSearch.getText().toString().trim().toLowerCase()));

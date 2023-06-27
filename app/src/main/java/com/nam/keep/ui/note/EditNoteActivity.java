@@ -1032,6 +1032,23 @@ public class EditNoteActivity extends AppCompatActivity {
             public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
                 itemTouchHelper.startDrag(viewHolder);
             }
+
+            @Override
+            public void onItemMoveListener(int fromPosition, int toPosition) {
+                CheckBoxContentNote movedItem = listCheckBox.get(fromPosition);
+                listCheckBox.remove(fromPosition);
+                listCheckBox.add(toPosition, movedItem);
+            }
+
+            @Override
+            public void inItemDismissListener(int position) {
+                listCheckBox.remove(position);
+            }
+
+            @Override
+            public void moveDoneListener() {
+
+            }
         }, new IClickChecked() {
             @Override
             public void ClickChecked(int position, EditText editText) {

@@ -109,18 +109,20 @@ public class RecyclerCheckBoxNoteAdapter extends RecyclerView.Adapter<RecyclerCh
 
     @Override
     public boolean onItemMove(int fromPosition, int toPosition) {
+        listener.onItemMoveListener(fromPosition, toPosition);
         notifyItemMoved(fromPosition, toPosition);
         return true;
     }
 
     @Override
     public void inItemDismiss(int position) {
+        listener.inItemDismissListener(position);
         notifyItemRemoved(position);
     }
 
     @Override
     public void moveDone() {
-
+        listener.moveDoneListener();
     }
 
     public class CheckBoxNoteViewHolder extends RecyclerView.ViewHolder {

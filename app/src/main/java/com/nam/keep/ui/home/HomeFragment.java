@@ -39,6 +39,7 @@ import com.nam.keep.notification.NotificationHelper;
 import com.nam.keep.ui.home.adapter.MyRecyclerAdapter;
 import com.nam.keep.ui.home.helper.IClickItemDetail;
 import com.nam.keep.ui.home.helper.MyItemTouchHelperCallback;
+import com.nam.keep.ui.home.helper.OnStartDangListener;
 import com.nam.keep.ui.note.AddNoteActivity;
 import com.nam.keep.ui.note.EditNoteActivity;
 
@@ -106,8 +107,26 @@ public class HomeFragment extends Fragment {
     }
 
     public void generateItem() {
-        adapter = new MyRecyclerAdapter(getActivity(), viewHolder -> {
-            itemTouchHelper.startDrag(viewHolder);
+        adapter = new MyRecyclerAdapter(getActivity(), new OnStartDangListener() {
+            @Override
+            public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+                itemTouchHelper.startDrag(viewHolder);
+            }
+
+            @Override
+            public void onItemMoveListener(int fromPosition, int toPosition) {
+
+            }
+
+            @Override
+            public void inItemDismissListener(int position) {
+
+            }
+
+            @Override
+            public void moveDoneListener() {
+
+            }
         }, new IClickItemDetail() {
             @Override
             public void onClickItemNote(View view, TextView title, TextView content,
@@ -120,7 +139,7 @@ public class HomeFragment extends Fragment {
                 intent.putExtra(EditNoteActivity.EXTRA_PARAM_ID, note.getId());
 
                 Pair isColorData, isContentOrCheckbox;
-                if (note.getColor() != Color.rgb(255,255,255)) {
+                if (note.getColor() != Color.rgb(255, 255, 255)) {
                     isColorData = new Pair<>(colorBackgroundImagedHome,
                             EditNoteActivity.VIEW_NAME_EDIT_COLOR);
                 } else {
@@ -147,7 +166,7 @@ public class HomeFragment extends Fragment {
                         isColorData,
                         new Pair<>(mainCategoriesNoteHome,
                                 EditNoteActivity.VIEW_NAME_LABEL));
-                startActivityForResult(intent,0);
+                startActivityForResult(intent, 0);
 //                ActivityCompat.startActivityForResult(requireActivity(), intent, 0, activityOptions.toBundle());
             }
         });
