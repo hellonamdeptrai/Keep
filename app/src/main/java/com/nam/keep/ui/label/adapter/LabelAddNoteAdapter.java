@@ -31,6 +31,11 @@ public class LabelAddNoteAdapter extends RecyclerView.Adapter<LabelAddNoteAdapte
         this.iLabelAddNoteClick = iLabelAddNoteClick;
     }
 
+    public void setData(ArrayList<Label> newData) {
+        list = newData;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public LabelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

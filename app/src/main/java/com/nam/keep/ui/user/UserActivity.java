@@ -5,11 +5,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.nam.keep.R;
 import com.nam.keep.database.DatabaseHelper;
@@ -23,23 +28,33 @@ public class UserActivity extends AppCompatActivity {
     // View
     private Button buttonBack;
     private RecyclerView recyclerView;
+    private EditText searchTextEmail;
 
     // data
     DatabaseHelper myDatabase;
     ArrayList<User> list = new ArrayList<>();
     ArrayList<User> userList = new ArrayList<>();
+    UserAddNoteAdapter adapter;
+    ArrayList<User> searchResults = new ArrayList<>();
+    SharedPreferences sharedPreferences;
     long idUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
+
+        sharedPreferences = getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
+
         if (getIntent().getParcelableArrayListExtra("userListEditIntent") != null) {
             userList.addAll(getIntent().getParcelableArrayListExtra("userListEditIntent"));
         }
-        idUser = getIntent().getLongExtra("idUserNote", 0);
+        idUser = getIntent().getLongExtra("idUserNote", 0) != 0 ?
+                getIntent().getLongExtra("idUserNote", 0) :
+                sharedPreferences.getLong("tokenable_id", 0);
 
         buttonBack = findViewById(R.id.button_back_user);
+        searchTextEmail = findViewById(R.id.search_text_email);
 
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +76,34 @@ public class UserActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
 
         myDatabase = new DatabaseHelper(UserActivity.this);
+
+        searchTextEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String searchText = charSequence.toString().toLowerCase();
+                searchResults.clear();
+
+                // Lọc các phần tử từ ArrayList ban đầu và thêm vào ArrayList tìm kiếm
+                for (User user : list) {
+                    if (user.getEmail().toLowerCase().contains(searchText)) {
+                        searchResults.add(user);
+                    }
+                }
+
+                // Cập nhật dữ liệu của Adapter với ArrayList tìm kiếm
+                adapter.setData(searchResults);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         getListUser();
     }
@@ -84,7 +127,7 @@ public class UserActivity extends AppCompatActivity {
             }
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(UserActivity.this));
-        UserAddNoteAdapter adapter = new UserAddNoteAdapter(list, new UserAddNoteClick() {
+        adapter = new UserAddNoteAdapter(list, new UserAddNoteClick() {
             @Override
             public void OnClickCheckBox(User user) {
                 if (user.getIsChecked() == 0) {

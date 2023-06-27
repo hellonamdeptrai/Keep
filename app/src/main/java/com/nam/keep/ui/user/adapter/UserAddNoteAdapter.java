@@ -16,7 +16,6 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.R;
-import com.nam.keep.model.Label;
 import com.nam.keep.model.User;
 import com.nam.keep.ui.user.helper.UserAddNoteClick;
 
@@ -30,6 +29,11 @@ public class UserAddNoteAdapter extends RecyclerView.Adapter<UserAddNoteAdapter.
     public UserAddNoteAdapter(ArrayList<User> list, UserAddNoteClick iUserAddNoteClick) {
         this.list = list;
         this.iUserAddNoteClick = iUserAddNoteClick;
+    }
+
+    public void setData(ArrayList<User> newData) {
+        list = newData;
+        notifyDataSetChanged();
     }
 
     @NonNull

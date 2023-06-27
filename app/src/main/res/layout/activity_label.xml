@@ -24,7 +24,7 @@
             android:layout_marginEnd="@dimen/normal_padding"/>
 
         <EditText
-            android:id="@+id/add_text_label"
+            android:id="@+id/search_text_label"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"

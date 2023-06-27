@@ -11,10 +11,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.nam.keep.R;
 import com.nam.keep.database.DatabaseHelper;
@@ -32,11 +37,14 @@ public class LabelActivity extends AppCompatActivity {
     // View
     private Button buttonBack;
     private RecyclerView recyclerView;
+    private EditText searchTextLabel;
 
     // data
     DatabaseHelper myDatabase;
     ArrayList<Label> list = new ArrayList<>();
     ArrayList<Label> labelList = new ArrayList<>();
+    ArrayList<Label> searchResults = new ArrayList<>();
+    LabelAddNoteAdapter adapter;
     SharedPreferences sharedPreferences;
     long idUser;
 
@@ -50,6 +58,7 @@ public class LabelActivity extends AppCompatActivity {
         }
 
         buttonBack = findViewById(R.id.button_back_label);
+        searchTextLabel = findViewById(R.id.search_text_label);
 
         sharedPreferences = getSharedPreferences("MyDataLogin", Context.MODE_PRIVATE);
         idUser = sharedPreferences.getLong("tokenable_id", 0);
@@ -74,6 +83,34 @@ public class LabelActivity extends AppCompatActivity {
 
         myDatabase = new DatabaseHelper(LabelActivity.this);
 
+        searchTextLabel.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String searchText = charSequence.toString().toLowerCase();
+                searchResults.clear();
+
+                // Lọc các phần tử từ ArrayList ban đầu và thêm vào ArrayList tìm kiếm
+                for (Label label : list) {
+                    if (label.getTitle().toLowerCase().contains(searchText)) {
+                        searchResults.add(label);
+                    }
+                }
+
+                // Cập nhật dữ liệu của Adapter với ArrayList tìm kiếm
+                adapter.setData(searchResults);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         getListLabel();
     }
 
@@ -94,7 +131,7 @@ public class LabelActivity extends AppCompatActivity {
             }
         }
         recyclerView.setLayoutManager(new LinearLayoutManager(LabelActivity.this));
-        LabelAddNoteAdapter adapter = new LabelAddNoteAdapter(list, new ILabelAddNoteClick() {
+        adapter = new LabelAddNoteAdapter(list, new ILabelAddNoteClick() {
             @Override
             public void OnClickCheckBox(Label label) {
                 if (label.getIsChecked() == 0) {

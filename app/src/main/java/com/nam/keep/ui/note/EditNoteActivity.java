@@ -16,6 +16,8 @@
 
 package com.nam.keep.ui.note;
 
+import static androidx.core.content.FileProvider.getUriForFile;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -60,6 +62,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -146,6 +149,7 @@ public class EditNoteActivity extends AppCompatActivity {
     private DatabaseHelper dataSource;
     Note noteData = new Note();
     ArrayList<Uri> listImageIntent = new ArrayList<>();
+    ArrayList<String> listImageIntentPath = new ArrayList<>();
     List<CheckBoxContentNote> listCheckBox = new ArrayList<>();
     private int colorNote = Color.rgb(255,255,255);
     private Bitmap imageBackground;
@@ -749,7 +753,10 @@ public class EditNoteActivity extends AppCompatActivity {
         Cursor cursor = dataSource.readNoteImage(id);
         if(cursor.getCount() != 0){
             while (cursor.moveToNext()){
-                listImageIntent.add(getUriFromPath(cursor.getString(1)));
+                listImageIntentPath.add(cursor.getString(1));
+                File file = new File(cursor.getString(1));
+                Uri contentUri = getUriForFile(EditNoteActivity.this, "com.nam.keep.fileprovider", file);
+                listImageIntent.add(contentUri);
             }
         }
     }
@@ -1071,15 +1078,16 @@ public class EditNoteActivity extends AppCompatActivity {
                 ));
             }
 
-
-            for (Uri uri : listImageIntent) {
+            dataSource.deleteImageInNote(idNote);
+            for (int i = 0; i < listImageIntent.size(); i++) {
+                Uri uri = listImageIntent.get(i);
                 FileModel fileModel = new FileModel();
                 String[] projection = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DISPLAY_NAME, MediaStore.Images.Media.DATA};
                 Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
                 if (cursor != null) {
                     cursor.moveToFirst();
                     String name = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME));
-                    String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+                    String path = cursor.getColumnIndex(MediaStore.Images.Media.DATA) != -1 ? cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)) : listImageIntentPath.get(i);
                     fileModel = new FileModel(name, path, idNote);
                     String newPath = saveImageToExternalStorage(fileModel);
                     fileModel.setPath(newPath);
