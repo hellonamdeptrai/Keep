@@ -18,6 +18,10 @@
             android:id="@+id/nav_label"
             android:icon="@drawable/ic_outline_label_24"
             android:title="@string/menu_label" />
+        <item
+            android:id="@+id/nav_archive"
+            android:icon="@drawable/ic_outline_archive_24"
+            android:title="@string/menu_archive" />
     </group>
 
     <item android:title="@string/title_menu_other">

@@ -7,4 +7,10 @@
         android:title="@string/action_reminder"
         app:showAsAction="ifRoom"
         />
+    <item
+        android:id="@+id/archive_add"
+        android:icon="@drawable/ic_outline_archive_24"
+        android:title="@string/menu_archive"
+        app:showAsAction="ifRoom"
+        />
 </menu>

@@ -58,7 +58,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 DataBaseContract.NoteEntry.COLUMN_BACKGROUND + " BLOB, " +
                 DataBaseContract.NoteEntry.COLUMN_USER_ID + " INTEGER, " +
                 DataBaseContract.NoteEntry.COLUMN_UPDATED_AT + " TIMESTAMP, " +
-                DataBaseContract.NoteEntry.COLUMN_IS_SYNC + " INTEGER );";
+                DataBaseContract.NoteEntry.COLUMN_IS_SYNC + " INTEGER, " +
+                DataBaseContract.NoteEntry.COLUMN_ARCHIVE + " INTEGER );";
         sqLiteDatabase.execSQL(queryNote);
 
         String queryImage = "CREATE TABLE " + DataBaseContract.ImageEntry.TABLE +
@@ -219,8 +220,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public Cursor getNote(){
-        String query = "SELECT * FROM " + DataBaseContract.NoteEntry.TABLE + " ORDER BY "+
-                DataBaseContract.NoteEntry.COLUMN_INDEX+" DESC";
+        String query = "SELECT * FROM " + DataBaseContract.NoteEntry.TABLE + " WHERE " +
+                DataBaseContract.NoteEntry.COLUMN_ARCHIVE + " = 0" +
+                " ORDER BY " + DataBaseContract.NoteEntry.COLUMN_INDEX + " DESC";
         database = this.getReadableDatabase();
 
         Cursor cursor = null;
@@ -232,7 +234,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor getNoteReminder(){
         String query = "SELECT * FROM " + DataBaseContract.NoteEntry.TABLE +
-                " WHERE " + DataBaseContract.NoteEntry.COLUMN_DEADLINE + " IS NOT NULL" +
+                " WHERE " + DataBaseContract.NoteEntry.COLUMN_ARCHIVE + " = 0" +
+                " AND " + DataBaseContract.NoteEntry.COLUMN_DEADLINE + " IS NOT NULL" +
                 " AND " + DataBaseContract.NoteEntry.COLUMN_DEADLINE + " <> ''" +
                 " ORDER BY " + DataBaseContract.NoteEntry.COLUMN_INDEX + " DESC";
         database = this.getReadableDatabase();
@@ -250,7 +253,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 DataBaseContract.NoteEntry.TABLE +"." +DataBaseContract.NoteEntry.COLUMN_ID + " = " +
                 DataBaseContract.NoteHasLabelEntry.TABLE + "." + DataBaseContract.NoteHasLabelEntry.COLUMN_NOTE_ID +
                 " WHERE " + DataBaseContract.NoteHasLabelEntry.TABLE +"." +DataBaseContract.NoteHasLabelEntry.COLUMN_LABEL_ID + " = " +
-                idLabel;
+                idLabel +
+                " AND " + DataBaseContract.NoteEntry.TABLE + "." + DataBaseContract.NoteEntry.COLUMN_ARCHIVE + " = 0";
         database = this.getReadableDatabase();
 
         Cursor cursor = null;
@@ -273,6 +277,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DataBaseContract.NoteEntry.COLUMN_USER_ID, note.getUserId());
         values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdatedAt());
         values.put(DataBaseContract.NoteEntry.COLUMN_IS_SYNC, note.getIsSync());
+        values.put(DataBaseContract.NoteEntry.COLUMN_ARCHIVE, 0);
         long insertId = database.insert(DataBaseContract.NoteEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed note", Toast.LENGTH_SHORT).show();
@@ -583,6 +588,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 DataBaseContract.NoteHasUserEntry.TABLE + "." + DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID +
                 " WHERE " + DataBaseContract.NoteHasUserEntry.TABLE +"." +DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID + " = " +
                 idUser +
+                " AND " + DataBaseContract.NoteEntry.TABLE + "." + DataBaseContract.NoteEntry.COLUMN_ARCHIVE + " = 0" +
                 " ORDER BY " + DataBaseContract.NoteEntry.COLUMN_INDEX + " DESC";
         database = this.getReadableDatabase();
 
@@ -601,7 +607,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 " WHERE " + DataBaseContract.NoteHasUserEntry.TABLE + "." + DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID + " = " +
                 idUser +
                 " AND " + DataBaseContract.NoteEntry.COLUMN_DEADLINE + " IS NOT NULL" +
-                " AND " + DataBaseContract.NoteEntry.COLUMN_DEADLINE + " <> ''";
+                " AND " + DataBaseContract.NoteEntry.COLUMN_DEADLINE + " <> ''" +
+                " AND " + DataBaseContract.NoteEntry.COLUMN_ARCHIVE + " = 0" +
+                " ORDER BY " + DataBaseContract.NoteEntry.COLUMN_INDEX + " DESC";
         database = this.getReadableDatabase();
 
         Cursor cursor = null;
@@ -609,5 +617,47 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor = database.rawQuery(query, null);
         }
         return cursor;
+    }
+
+    public Cursor getNoteArchive(){
+        String query = "SELECT * FROM " + DataBaseContract.NoteEntry.TABLE +
+                " WHERE " + DataBaseContract.NoteEntry.COLUMN_ARCHIVE + " = 1 " +
+                " ORDER BY " + DataBaseContract.NoteEntry.COLUMN_INDEX + " DESC";
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+    public Cursor getNoteArchiveUser(long idUser){
+        String query = "SELECT " + DataBaseContract.NoteEntry.TABLE + ".* FROM " + DataBaseContract.NoteHasUserEntry.TABLE +
+                " JOIN " + DataBaseContract.NoteEntry.TABLE + " ON " +
+                DataBaseContract.NoteEntry.TABLE +"." +DataBaseContract.NoteEntry.COLUMN_ID + " = " +
+                DataBaseContract.NoteHasUserEntry.TABLE + "." + DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID +
+                " WHERE " + DataBaseContract.NoteHasUserEntry.TABLE + "." + DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID + " = " +
+                idUser +
+                " AND " + DataBaseContract.NoteEntry.COLUMN_ARCHIVE + " = 1 " +
+                " ORDER BY " + DataBaseContract.NoteEntry.COLUMN_INDEX + " DESC";
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
+    }
+
+    public void updateNoteArchive(Long idNote, int isArchive){
+        database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.NoteEntry.COLUMN_ARCHIVE, isArchive);
+        long insertId = database.update(DataBaseContract.NoteEntry.TABLE, values, DataBaseContract.NoteEntry.COLUMN_ID+
+                "=?", new String[]{idNote+""});
+        if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
     }
 }

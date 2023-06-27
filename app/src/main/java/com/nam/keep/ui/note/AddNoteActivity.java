@@ -416,6 +416,7 @@ public class AddNoteActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.compose_note, menu);
         MenuItem item = menu.findItem(R.id.notification_add);
+        MenuItem itemArchive = menu.findItem(R.id.archive_add);
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -423,6 +424,7 @@ public class AddNoteActivity extends AppCompatActivity {
                 return true;
             }
         });
+        itemArchive.setVisible(false);
         return true;
     }
 

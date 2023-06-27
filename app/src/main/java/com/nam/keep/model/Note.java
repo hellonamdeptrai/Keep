@@ -14,6 +14,7 @@ public class Note {
     private String updatedAt;
     private long userId;
     private int isSync;
+    private int archive;
 
     // api
     private String is_check_box_or_content;
@@ -179,5 +180,13 @@ public class Note {
 
     public void setIsSync(int isSync) {
         this.isSync = isSync;
+    }
+
+    public int getArchive() {
+        return archive;
+    }
+
+    public void setArchive(int archive) {
+        this.archive = archive;
     }
 }

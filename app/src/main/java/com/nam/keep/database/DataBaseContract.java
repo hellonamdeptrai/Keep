@@ -29,6 +29,7 @@ public final class DataBaseContract {
         public static final String COLUMN_UPDATED_AT = "_updated_at";
         public static final String COLUMN_USER_ID = "_user_id";
         public static final String COLUMN_IS_SYNC = "_is_sync";
+        public static final String COLUMN_ARCHIVE = "_archive";
     }
 
     public static class ImageEntry implements BaseColumns {

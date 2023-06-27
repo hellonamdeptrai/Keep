@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_reminder, R.id.nav_label)
+                R.id.nav_home, R.id.nav_reminder, R.id.nav_label, R.id.nav_archive)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -82,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
                 } else if (itemId == R.id.nav_label) {
                     // Mở LabelFragment
                     navController.navigate(R.id.nav_label);
+                } else if (itemId == R.id.nav_archive) {
+                    navController.navigate(R.id.nav_archive);
                 }
                 // Đóng drawer sau khi chọn một mục
                 drawer.closeDrawer(GravityCompat.START);

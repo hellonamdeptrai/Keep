@@ -482,6 +482,7 @@ public class EditNoteActivity extends AppCompatActivity {
                 noteData.setUpdatedAt(cursor.getString(9));
                 noteData.setUserId(Long.parseLong(cursor.getString(8)));
                 noteData.setIsSync(Integer.parseInt(cursor.getString(10)));
+                noteData.setArchive(Integer.parseInt(cursor.getString(11)));
             }
 
             mTitle.setText(noteData.getTitle());
@@ -534,10 +535,19 @@ public class EditNoteActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.compose_note, menu);
         MenuItem item = menu.findItem(R.id.notification_add);
+        MenuItem itemArchive = menu.findItem(R.id.archive_add);
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 showDateTimePicker();
+                return true;
+            }
+        });
+        itemArchive.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                dataSource.updateNoteArchive(idNote, noteData.getArchive() != 1 ? 1 : 0);
+                finish();
                 return true;
             }
         });
