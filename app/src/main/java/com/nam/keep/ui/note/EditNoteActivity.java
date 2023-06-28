@@ -69,6 +69,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.R;
@@ -152,7 +155,7 @@ public class EditNoteActivity extends AppCompatActivity {
     ArrayList<String> listImageIntentPath = new ArrayList<>();
     List<CheckBoxContentNote> listCheckBox = new ArrayList<>();
     private int colorNote = Color.rgb(255,255,255);
-    private Bitmap imageBackground;
+    private String imageBackground;
     private int isCheckBoxOrContent = 0;
     ItemTouchHelper itemTouchHelper;
     MediaRecorder mediaRecorder;
@@ -478,7 +481,7 @@ public class EditNoteActivity extends AppCompatActivity {
                 noteData.setIsCheckBoxOrContent(Integer.parseInt(cursor.getString(4)));
                 noteData.setDeadline(cursor.getString(5));
                 noteData.setColor(Integer.parseInt(cursor.getString(6)));
-                noteData.setBackground(cursor.getBlob(7));
+                noteData.setBackground(cursor.getString(7));
                 noteData.setUpdatedAt(cursor.getString(9));
                 noteData.setUserId(Long.parseLong(cursor.getString(8)));
                 noteData.setIsSync(Integer.parseInt(cursor.getString(10)));
@@ -509,10 +512,16 @@ public class EditNoteActivity extends AppCompatActivity {
             }
 
             if (noteData.getBackground() != null){
-                Bitmap bitmap = BitmapFactory.decodeByteArray(noteData.getBackground(),0,noteData.getBackground().length);
-                BitmapDrawable ob = new BitmapDrawable(getResources(), bitmap);
-                imageBackground = bitmap;
-                mMainAddNote.setBackground(ob);
+                imageBackground = noteData.getBackground();
+                Glide.with(EditNoteActivity.this)
+                        .load(imageBackground)
+                        .centerCrop()
+                        .into(new SimpleTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                mMainAddNote.setBackground(resource);
+                            }
+                        });
                 mRoundedImageColor.setBackgroundColor(noteData.getColor());
                 if (noteData.getColor() == Color.rgb(255,255,255)){
                     mRoundedImageColor.setBackground(null);
@@ -894,45 +903,85 @@ public class EditNoteActivity extends AppCompatActivity {
         bottomSheetView.findViewById(R.id.image_note_1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Drawable drawable = ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.gg1);
-                imageBackground = ((BitmapDrawable)drawable).getBitmap();
-                mMainAddNote.setBackground(drawable);
+                int imageResourceId = getResources().getIdentifier("gg1", "drawable", getPackageName());
+                imageBackground = Uri.parse("android.resource://" + getPackageName() + "/" + imageResourceId).toString();
+                Glide.with(EditNoteActivity.this)
+                        .load(imageBackground)
+                        .centerCrop()
+                        .into(new SimpleTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                mMainAddNote.setBackground(resource);
+                            }
+                        });
                 checkBackgroundColorOrImage(colorNote);
             }
         });
         bottomSheetView.findViewById(R.id.image_note_2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Drawable drawable = ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.gg2);
-                imageBackground = ((BitmapDrawable)drawable).getBitmap();
-                mMainAddNote.setBackground(drawable);
+                int imageResourceId = getResources().getIdentifier("gg2", "drawable", getPackageName());
+                imageBackground = Uri.parse("android.resource://" + getPackageName() + "/" + imageResourceId).toString();
+                Glide.with(EditNoteActivity.this)
+                        .load(imageBackground)
+                        .centerCrop()
+                        .into(new SimpleTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                mMainAddNote.setBackground(resource);
+                            }
+                        });
                 checkBackgroundColorOrImage(colorNote);
             }
         });
         bottomSheetView.findViewById(R.id.image_note_3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Drawable drawable = ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.gg3);
-                imageBackground = ((BitmapDrawable)drawable).getBitmap();
-                mMainAddNote.setBackground(drawable);
+                int imageResourceId = getResources().getIdentifier("gg3", "drawable", getPackageName());
+                imageBackground = Uri.parse("android.resource://" + getPackageName() + "/" + imageResourceId).toString();
+                Glide.with(EditNoteActivity.this)
+                        .load(imageBackground)
+                        .centerCrop()
+                        .into(new SimpleTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                mMainAddNote.setBackground(resource);
+                            }
+                        });
                 checkBackgroundColorOrImage(colorNote);
             }
         });
         bottomSheetView.findViewById(R.id.image_note_4).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Drawable drawable = ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.gg4);
-                imageBackground = ((BitmapDrawable)drawable).getBitmap();
-                mMainAddNote.setBackground(drawable);
+                int imageResourceId = getResources().getIdentifier("gg4", "drawable", getPackageName());
+                imageBackground = Uri.parse("android.resource://" + getPackageName() + "/" + imageResourceId).toString();
+                Glide.with(EditNoteActivity.this)
+                        .load(imageBackground)
+                        .centerCrop()
+                        .into(new SimpleTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                mMainAddNote.setBackground(resource);
+                            }
+                        });
                 checkBackgroundColorOrImage(colorNote);
             }
         });
         bottomSheetView.findViewById(R.id.image_note_5).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Drawable drawable = ContextCompat.getDrawable(EditNoteActivity.this, R.drawable.gg5);
-                imageBackground = ((BitmapDrawable)drawable).getBitmap();
-                mMainAddNote.setBackground(drawable);
+                int imageResourceId = getResources().getIdentifier("gg5", "drawable", getPackageName());
+                imageBackground = Uri.parse("android.resource://" + getPackageName() + "/" + imageResourceId).toString();
+                Glide.with(EditNoteActivity.this)
+                        .load(imageBackground)
+                        .centerCrop()
+                        .into(new SimpleTarget<Drawable>() {
+                            @Override
+                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                                mMainAddNote.setBackground(resource);
+                            }
+                        });
                 checkBackgroundColorOrImage(colorNote);
             }
         });
@@ -1077,11 +1126,6 @@ public class EditNoteActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         if (isSaveData && isFinishing()) {
-            ByteArrayOutputStream byteArrayOutputStream = null;
-            if (imageBackground != null) {
-                byteArrayOutputStream = new ByteArrayOutputStream();
-                imageBackground.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-            }
             if (isCheckBoxOrContent == 1) {
                 editTextAddIdCheckBox();
             }
@@ -1092,7 +1136,7 @@ public class EditNoteActivity extends AppCompatActivity {
             note.setIsCheckBoxOrContent(isCheckBoxOrContent);
             note.setDeadline(dateTimePicker != null ? dateTimePicker.toString() : "");
             note.setColor(colorNote);
-            note.setBackground(imageBackground != null ? Objects.requireNonNull(byteArrayOutputStream).toByteArray() : null);
+            note.setBackground(imageBackground != null ? imageBackground : null);
             note.setUpdatedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date()));
             note.setIsSync(0);
             dataSource.updateNote(note);

@@ -41,6 +41,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,8 +63,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    private static final String BASE_URL = "http://172.20.10.7:8000/api/";
-    private static final String BASE_URL_STORAGE = "http://172.20.10.7:8000/storage/";
+    private static final String BASE_URL = "http://192.168.50.143:8000/api/";
+    private static final String BASE_URL_STORAGE = "http://192.168.50.143:8000/storage/";
     private ApiService apiService;
     DatabaseHelper myDatabase;
     SharedPreferences sharedPreferences;
@@ -161,9 +162,7 @@ public class ApiClient {
 
                             @Override
                             public void onTaskComplete(String result) {
-                                lottieAnimationView.setVisibility(View.GONE);
-                                frameLayout.setVisibility(View.VISIBLE);
-                                Toast.makeText(context, "Đồng bộ thành công", Toast.LENGTH_SHORT).show();
+
                             }
                         });
                         myAsyncTaskUploadLabel.execute();
@@ -187,15 +186,17 @@ public class ApiClient {
 
                             @Override
                             public void onTaskComplete(String result) {
-                                lottieAnimationView.setVisibility(View.GONE);
-                                frameLayout.setVisibility(View.VISIBLE);
-                                Toast.makeText(context, "Đồng bộ thành công", Toast.LENGTH_SHORT).show();
+
                             }
                         });
                         myAsyncTaskUploadNote.execute();
                     }
                 });
                 myAsyncTaskNote.execute();
+
+                lottieAnimationView.setVisibility(View.GONE);
+                frameLayout.setVisibility(View.VISIBLE);
+                Toast.makeText(context, "Đồng bộ thành công", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -476,7 +477,7 @@ public class ApiClient {
             Label label = new Label();
             label.setTitle(labelItem.getTitle());
             label.setUpdated_at(labelItem.getUpdated_at());
-            label.setUserId(labelItem.getUserId());
+            label.setUserId(Long.parseLong(labelItem.getUser_id()));
             label.setIsSync(1);
             myDatabase.createLabel(label);
         }
@@ -489,8 +490,11 @@ public class ApiClient {
         if (cursor.getCount() != 0) {
             while (cursor.moveToNext()) {
                 Label label = new Label();
+                label.setId(Long.parseLong(cursor.getString(0)));
                 label.setTitle(cursor.getString(1));
+                label.setIsSync(1);
                 labels.add(label);
+                myDatabase.updateLabel(label);
             }
         }
         allData.setLabels(labels);
@@ -516,10 +520,119 @@ public class ApiClient {
     }
 
     private void getNoteApi(AllData allData, Context context) throws IOException {
+        Thread deleteThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                myDatabase.detachNoteSync(1);
+                myDatabase.deleteNoteSync(1);
 
+//                myDatabase.deleteFileInNote(idNote);
+//                myDatabase.detachLabel(idNote);
+//                myDatabase.detachUser(idNote);
+//                myDatabase.deleteImageInNote(idNote);
+            }
+        });
+        deleteThread.start();
+
+        try {
+            deleteThread.join(); // Đợi cho đến khi deleteThread hoàn thành
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        for (Note noteItem : allData.getNotes()) {
+            String dateString = noteItem.getDeadline() != null ? noteItem.getDeadline() : "";
+            String updatedAtString = noteItem.getUpdated_at() != null ? noteItem.getUpdated_at() : "";
+            if (!dateString.isEmpty()) {
+                try {
+                    Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(dateString);
+                    assert date != null;
+                    dateString = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH).format(date);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            if (!updatedAtString.isEmpty()) {
+                try {
+                    Date date2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", Locale.getDefault()).parse(updatedAtString);
+                    assert date2 != null;
+                    updatedAtString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(date2);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            Note note = new Note();
+            note.setIndex(noteItem.getIndex());
+            note.setTitle(noteItem.getTitle());
+            note.setContent(noteItem.getContent());
+            note.setIsCheckBoxOrContent(Integer.parseInt(noteItem.getIs_check_box_or_content()));
+            note.setDeadline(dateString);
+            note.setColor(noteItem.getColor());
+            note.setBackground(noteItem.getBackground());
+            note.setUpdatedAt(updatedAtString);
+            note.setUserId(Long.parseLong(noteItem.getUser_id()));
+            note.setIsSync(1);
+            note.setArchive(noteItem.getArchive());
+            myDatabase.createNote(note);
+            long idNewNote = myDatabase.getNoteIdNew();
+            myDatabase.attachUser(idNewNote, note.getUserId());
+        }
     }
 
     public void uploadDataNoteApi(Context context, long idUser) {
 
+        List<Note> notes = new ArrayList<>();
+        AllData allData = new AllData();
+        Cursor cursor = myDatabase.getSearchNoteUser("", idUser);
+        if (cursor.getCount() != 0) {
+            while (cursor.moveToNext()) {
+                String dateString = cursor.getString(5);
+                if (!dateString.isEmpty()) {
+                    try {
+                        Date date = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH).parse(dateString);
+                        assert date != null;
+                        dateString = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(date);
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                Note note = new Note();
+                note.setId(Long.parseLong(cursor.getString(0)));
+                note.setIndex(Integer.parseInt(cursor.getString(1)));
+                note.setTitle(cursor.getString(2));
+                note.setContent(cursor.getString(3));
+                note.setIsCheckBoxOrContent(Integer.parseInt(cursor.getString(4)));
+                note.setDeadline(dateString);
+                note.setColor(Integer.parseInt(cursor.getString(6)));
+                note.setBackground(cursor.getString(7) != null ? cursor.getString(7) : "");
+                note.setUpdatedAt(cursor.getString(9));
+                note.setUserId(Long.parseLong(cursor.getString(8)));
+                note.setArchive(Integer.parseInt(cursor.getString(11)));
+                note.setIsSync(1);
+                notes.add(note);
+                myDatabase.updateNoteSync(note);
+            }
+        }
+        allData.setNotes(notes);
+        Call<ResponseBody> call = apiService.uploadNote(allData);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.v("SUCCESS", response.raw() + " ");
+                if (response.isSuccessful()) {
+                    // Xử lý thành công
+                    Toast.makeText(context, "Tải lên danh sách ghi chú thành công", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Xử lý lỗi
+                    Toast.makeText(context, "Lỗi tải lên danh sách ghi chú", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(context, "Lỗi tải lên dữ liệu ghi chú", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

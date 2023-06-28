@@ -36,4 +36,7 @@ public interface ApiService {
 
     @POST("sync/label")
     Call<ResponseBody> uploadLabel(@Body AllData labels);
+
+    @POST("sync/note")
+    Call<ResponseBody> uploadNote(@Body AllData notes);
 }

@@ -55,7 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 DataBaseContract.NoteEntry.COLUMN_IS_CHECKBOX_OR_CONTENT + " INTEGER, " +
                 DataBaseContract.NoteEntry.COLUMN_DEADLINE + " DATETIME, " +
                 DataBaseContract.NoteEntry.COLUMN_COLOR + " INTEGER, " +
-                DataBaseContract.NoteEntry.COLUMN_BACKGROUND + " BLOB, " +
+                DataBaseContract.NoteEntry.COLUMN_BACKGROUND + " TEXT, " +
                 DataBaseContract.NoteEntry.COLUMN_USER_ID + " INTEGER, " +
                 DataBaseContract.NoteEntry.COLUMN_UPDATED_AT + " TIMESTAMP, " +
                 DataBaseContract.NoteEntry.COLUMN_IS_SYNC + " INTEGER, " +
@@ -312,7 +312,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(DataBaseContract.NoteEntry.COLUMN_USER_ID, note.getUserId());
         values.put(DataBaseContract.NoteEntry.COLUMN_UPDATED_AT, note.getUpdatedAt());
         values.put(DataBaseContract.NoteEntry.COLUMN_IS_SYNC, note.getIsSync());
-        values.put(DataBaseContract.NoteEntry.COLUMN_ARCHIVE, 0);
+        values.put(DataBaseContract.NoteEntry.COLUMN_ARCHIVE, note.getArchive());
         long insertId = database.insert(DataBaseContract.NoteEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed note", Toast.LENGTH_SHORT).show();
@@ -342,6 +342,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DataBaseContract.NoteEntry.COLUMN_INDEX, note.getIndex());
+        long insertId = database.update(DataBaseContract.NoteEntry.TABLE, values, DataBaseContract.NoteEntry.COLUMN_ID+
+                "=?", new String[]{note.getId()+""});
+        if(insertId == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void updateNoteSync(Note note){
+        database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.NoteEntry.COLUMN_IS_SYNC, note.getIsSync());
         long insertId = database.update(DataBaseContract.NoteEntry.TABLE, values, DataBaseContract.NoteEntry.COLUMN_ID+
                 "=?", new String[]{note.getId()+""});
         if(insertId == -1){
@@ -704,5 +715,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if(result == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void deleteNoteSync(int isSync){
+        database = this.getWritableDatabase();
+        long result = database.delete(DataBaseContract.NoteEntry.TABLE,
+                DataBaseContract.NoteEntry.COLUMN_IS_SYNC+"=?", new String[]{isSync+""});
+        if(result == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void detachNoteSync(int isSync){
+        database = this.getWritableDatabase();
+        String deleteQuery = "DELETE FROM " + DataBaseContract.NoteHasUserEntry.TABLE +
+                " WHERE " + DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID +
+                " IN (SELECT " + DataBaseContract.NoteEntry._ID +
+                " FROM " + DataBaseContract.NoteEntry.TABLE +
+                " WHERE " + DataBaseContract.NoteEntry.COLUMN_IS_SYNC + " = " + isSync + ")";
+
+        database.execSQL(deleteQuery);
     }
 }

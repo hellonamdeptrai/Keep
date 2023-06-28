@@ -155,7 +155,7 @@ public class SearchActivity extends AppCompatActivity {
                 note.setIsCheckBoxOrContent(Integer.parseInt(cursor.getString(4)));
                 note.setDeadline(cursor.getString(5));
                 note.setColor(Integer.parseInt(cursor.getString(6)));
-                note.setBackground(cursor.getBlob(7));
+                note.setBackground(cursor.getString(7));
                 note.setUpdatedAt(cursor.getString(9));
                 note.setUserId(Long.parseLong(cursor.getString(8)));
                 note.setIsSync(Integer.parseInt(cursor.getString(10)));

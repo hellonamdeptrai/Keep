@@ -15,6 +15,7 @@ public class Label implements Parcelable {
     // api
     private String created_at;
     private String updated_at;
+    private String user_id;
 
     public Label() {
     }
@@ -122,5 +123,13 @@ public class Label implements Parcelable {
 
     public void setIsSync(int isSync) {
         this.isSync = isSync;
+    }
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 }

@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.bumptech.glide.Glide;
 import com.makeramen.roundedimageview.RoundedImageView;
 import com.nam.keep.R;
 import com.nam.keep.model.Label;
@@ -97,13 +98,12 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
         }
 
         if (noteItem.getBackground() != null){
-            byte[] blob = noteItem.getBackground();
-            Bitmap bitmap = null;
-            if (blob != null) {
-                bitmap = BitmapFactory.decodeByteArray(blob,0,blob.length);
-            }
-            BitmapDrawable ob = new BitmapDrawable(holder.itemView.getContext().getResources(), bitmap);
-            holder.imageBackgroundHome.setBackground(ob);
+            Glide.with(holder.imageBackgroundHome.getContext())
+                    .load(noteItem.getBackground())
+                    .override(200,300)
+                    .centerCrop()
+                    .fitCenter()
+                    .into(holder.imageBackgroundHome);
         }else {
             holder.imageBackgroundHome.setVisibility(View.GONE);
         }

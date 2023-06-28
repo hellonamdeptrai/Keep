@@ -10,7 +10,7 @@ public class Note {
     private int isCheckBoxOrContent;
     private String deadline;
     private int color;
-    private byte[] background;
+    private String background;
     private String updatedAt;
     private long userId;
     private int isSync;
@@ -25,7 +25,7 @@ public class Note {
     public Note() {
     }
 
-    public Note(int index, String title, String content, int isCheckBoxOrContent, String deadline, int color, byte[] background, String updatedAt, long userId) {
+    public Note(int index, String title, String content, int isCheckBoxOrContent, String deadline, int color, String background, String updatedAt, long userId) {
         this.index = index;
         this.title = title;
         this.content = content;
@@ -37,7 +37,7 @@ public class Note {
         this.userId = userId;
     }
 
-    public Note(long id, int index, String title, String content, int isCheckBoxOrContent, String deadline, int color, byte[] background, String updatedAt) {
+    public Note(long id, int index, String title, String content, int isCheckBoxOrContent, String deadline, int color, String background, String updatedAt) {
         this.id = id;
         this.index = index;
         this.title = title;
@@ -49,7 +49,7 @@ public class Note {
         this.updatedAt = updatedAt;
     }
 
-    public Note(long id, int index, String title, String content, int isCheckBoxOrContent, String deadline, int color, byte[] background, String updatedAt, long userId) {
+    public Note(long id, int index, String title, String content, int isCheckBoxOrContent, String deadline, int color, String background, String updatedAt, long userId) {
         this.id = id;
         this.index = index;
         this.title = title;
@@ -118,11 +118,11 @@ public class Note {
         this.color = color;
     }
 
-    public byte[] getBackground() {
+    public String getBackground() {
         return background;
     }
 
-    public void setBackground(byte[] background) {
+    public void setBackground(String background) {
         this.background = background;
     }
 
