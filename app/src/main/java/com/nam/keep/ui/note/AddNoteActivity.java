@@ -945,7 +945,7 @@ public class AddNoteActivity extends AppCompatActivity {
 
             // attach note user
             if (idUser != 0) {
-                dataSource.attachUser(idNewNote, idUser);
+                dataSource.attachUser(idNewNote, idUser, 0);
             }
 
             for (String pathFile : listPathRecorder) {
@@ -974,7 +974,7 @@ public class AddNoteActivity extends AppCompatActivity {
                 dataSource.attachLabel(idNewNote, label.getId());
             }
             for (User user: listUserNote) {
-                dataSource.attachUser(idNewNote, user.getId());
+                dataSource.attachUser(idNewNote, user.getId(), 0);
             }
             dataSource.close();
             setResult(RESULT_OK);

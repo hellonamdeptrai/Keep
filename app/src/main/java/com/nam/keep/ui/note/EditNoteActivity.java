@@ -1172,7 +1172,7 @@ public class EditNoteActivity extends AppCompatActivity {
             }
             dataSource.detachUser(idNote);
             for (User user: listUserNote) {
-                dataSource.attachUser(idNote, user.getId());
+                dataSource.attachUser(idNote, user.getId(), 0);
             }
             dataSource.close();
             setResult(RESULT_OK);

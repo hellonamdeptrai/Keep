@@ -30,6 +30,7 @@ import com.nam.keep.database.DatabaseHelper;
 import com.nam.keep.model.AllData;
 import com.nam.keep.model.Label;
 import com.nam.keep.model.Note;
+import com.nam.keep.model.NoteHas;
 import com.nam.keep.model.User;
 import com.nam.keep.utils.UtilsFunction;
 
@@ -193,6 +194,19 @@ public class ApiClient {
                     }
                 });
                 myAsyncTaskNote.execute();
+
+//                MyAsyncTask myAsyncTaskNoteHasUser = new MyAsyncTask(new AsyncTaskCompleteListener<String>() {
+//                    @Override
+//                    public void onDoInBackground() throws IOException {
+//                        uploadDataNoteHasUserApi(context, idUser);
+//                    }
+//
+//                    @Override
+//                    public void onTaskComplete(String result) {
+//
+//                    }
+//                });
+//                myAsyncTaskNoteHasUser.execute();
 
                 lottieAnimationView.setVisibility(View.GONE);
                 frameLayout.setVisibility(View.VISIBLE);
@@ -524,12 +538,10 @@ public class ApiClient {
             @Override
             public void run() {
                 myDatabase.detachNoteSync(1);
+                myDatabase.detachLabelSync(1);
+                myDatabase.deleteFileInNoteSync(1);
+                myDatabase.deleteImageInNoteSync(1);
                 myDatabase.deleteNoteSync(1);
-
-//                myDatabase.deleteFileInNote(idNote);
-//                myDatabase.detachLabel(idNote);
-//                myDatabase.detachUser(idNote);
-//                myDatabase.deleteImageInNote(idNote);
             }
         });
         deleteThread.start();
@@ -576,7 +588,9 @@ public class ApiClient {
             note.setArchive(noteItem.getArchive());
             myDatabase.createNote(note);
             long idNewNote = myDatabase.getNoteIdNew();
-            myDatabase.attachUser(idNewNote, note.getUserId());
+            for (User user: noteItem.getUsers()) {
+                myDatabase.attachUser(idNewNote, user.getId(), 1);
+            }
         }
     }
 
@@ -614,6 +628,19 @@ public class ApiClient {
                 myDatabase.updateNoteSync(note);
             }
         }
+        List<NoteHas> noteHas = new ArrayList<>();
+        Cursor cursor2 = myDatabase.getNoteHasUser();
+        if (cursor2.getCount() != 0) {
+            while (cursor2.moveToNext()) {
+                NoteHas note = new NoteHas();
+                note.setUser_id(cursor2.getString(0));
+                note.setNote_id(cursor2.getString(1));
+                note.setUpdated_at(cursor2.getString(2));
+                noteHas.add(note);
+            }
+            myDatabase.attachUserUpdateSync(1);
+        }
+        allData.setNote_has_user(noteHas);
         allData.setNotes(notes);
         Call<ResponseBody> call = apiService.uploadNote(allData);
         call.enqueue(new Callback<ResponseBody>() {
@@ -635,4 +662,39 @@ public class ApiClient {
             }
         });
     }
+
+//    public void uploadDataNoteHasUserApi(Context context, long idUser) {
+//        List<NoteHas> notes = new ArrayList<>();
+//        AllData allData = new AllData();
+//        Cursor cursor = myDatabase.getNoteHasUser();
+//        if (cursor.getCount() != 0) {
+//            while (cursor.moveToNext()) {
+//                NoteHas note = new NoteHas();
+//                note.setUser_id(cursor.getString(0));
+//                note.setNote_id(cursor.getString(1));
+//                note.setUpdated_at(cursor.getString(2));
+//                notes.add(note);
+//            }
+//        }
+//        allData.setNote_has_user(notes);
+//        Call<ResponseBody> call = apiService.uploadNoteHasUser(allData);
+//        call.enqueue(new Callback<ResponseBody>() {
+//            @Override
+//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                Log.v("SUCCESS", response.raw() + " ");
+//                if (response.isSuccessful()) {
+//                    // Xử lý thành công
+//                    Toast.makeText(context, "Tải lên danh sách ghi chú của người dùng thành công", Toast.LENGTH_SHORT).show();
+//                } else {
+//                    // Xử lý lỗi
+//                    Toast.makeText(context, "Lỗi tải lên danh sách ghi chú của người dùng", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ResponseBody> call, Throwable t) {
+//                Toast.makeText(context, "Lỗi tải lên dữ liệu ghi chú của người dùng", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
 }

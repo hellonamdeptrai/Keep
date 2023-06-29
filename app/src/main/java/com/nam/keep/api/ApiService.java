@@ -39,4 +39,7 @@ public interface ApiService {
 
     @POST("sync/note")
     Call<ResponseBody> uploadNote(@Body AllData notes);
+
+    @POST("sync/note-has-user")
+    Call<ResponseBody> uploadNoteHasUser(@Body AllData notes);
 }

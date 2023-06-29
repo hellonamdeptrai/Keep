@@ -580,16 +580,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public void attachUser(long idNote, long idUser){
+    public void attachUser(long idNote, long idUser, int isSync){
         database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID, idNote);
         values.put(DataBaseContract.NoteHasUserEntry.COLUMN_USER_ID, idUser);
+        values.put(DataBaseContract.NoteHasUserEntry.COLUMN_IS_SYNC, isSync);
 //        values.put(DataBaseContract.NoteHasLabelEntry.COLUMN_UPDATED_AT, user.getUpdated_at());
         long insertId = database.insert(DataBaseContract.NoteHasUserEntry.TABLE, null, values);
         if(insertId == -1){
             Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void attachUserUpdateSync(int isSync){
+        database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DataBaseContract.NoteHasUserEntry.COLUMN_IS_SYNC, isSync);
+        database.update(DataBaseContract.NoteHasUserEntry.TABLE, values, null, null);
     }
 
     public void detachUser(long idNote){
@@ -728,12 +736,54 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void detachNoteSync(int isSync){
         database = this.getWritableDatabase();
-        String deleteQuery = "DELETE FROM " + DataBaseContract.NoteHasUserEntry.TABLE +
-                " WHERE " + DataBaseContract.NoteHasUserEntry.COLUMN_NOTE_ID +
+        long result = database.delete(DataBaseContract.NoteHasUserEntry.TABLE,
+                DataBaseContract.NoteHasUserEntry.COLUMN_IS_SYNC+"=?", new String[]{isSync+""});
+        if(result == -1){
+            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void deleteFileInNoteSync(int isSync){
+        database = this.getWritableDatabase();
+        String deleteQuery = "DELETE FROM " + DataBaseContract.FileEntry.TABLE +
+                " WHERE " + DataBaseContract.FileEntry.COLUMN_NOTE_ID +
                 " IN (SELECT " + DataBaseContract.NoteEntry._ID +
                 " FROM " + DataBaseContract.NoteEntry.TABLE +
-                " WHERE " + DataBaseContract.NoteEntry.COLUMN_IS_SYNC + " = " + isSync + ")";
+                " WHERE " + DataBaseContract.NoteEntry.COLUMN_IS_SYNC + " = "+isSync+")";
 
         database.execSQL(deleteQuery);
+    }
+
+    public void detachLabelSync(int isSync){
+        database = this.getWritableDatabase();
+        String deleteQuery = "DELETE FROM " + DataBaseContract.NoteHasLabelEntry.TABLE +
+                " WHERE " + DataBaseContract.NoteHasLabelEntry.COLUMN_NOTE_ID +
+                " IN (SELECT " + DataBaseContract.NoteEntry._ID +
+                " FROM " + DataBaseContract.NoteEntry.TABLE +
+                " WHERE " + DataBaseContract.NoteEntry.COLUMN_IS_SYNC + " = "+isSync+")";
+
+        database.execSQL(deleteQuery);
+    }
+
+    public void deleteImageInNoteSync(int isSync){
+        database = this.getWritableDatabase();
+        String deleteQuery = "DELETE FROM " + DataBaseContract.ImageEntry.TABLE +
+                " WHERE " + DataBaseContract.ImageEntry.COLUMN_NOTE_ID +
+                " IN (SELECT " + DataBaseContract.NoteEntry._ID +
+                " FROM " + DataBaseContract.NoteEntry.TABLE +
+                " WHERE " + DataBaseContract.NoteEntry.COLUMN_IS_SYNC + " = "+isSync+")";
+
+        database.execSQL(deleteQuery);
+    }
+
+    public Cursor getNoteHasUser(){
+        String query = "SELECT * FROM " + DataBaseContract.NoteHasUserEntry.TABLE;
+        database = this.getReadableDatabase();
+
+        Cursor cursor = null;
+        if(database != null){
+            cursor = database.rawQuery(query, null);
+        }
+        return cursor;
     }
 }

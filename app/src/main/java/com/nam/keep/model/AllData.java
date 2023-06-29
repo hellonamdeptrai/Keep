@@ -8,8 +8,8 @@ public class AllData {
     private List<FileModel> images;
     private List<FileModel> files;
     private List<Label> labels;
-    private List<NoteHas> noteHasLabel;
-    private List<NoteHas> noteHasUser;
+    private List<NoteHas> note_has_label;
+    private List<NoteHas> note_has_user;
 
 
     public List<User> getUsers() {
@@ -52,19 +52,19 @@ public class AllData {
         this.labels = labels;
     }
 
-    public List<NoteHas> getNoteHasLabel() {
-        return noteHasLabel;
+    public List<NoteHas> getNote_has_label() {
+        return note_has_label;
     }
 
-    public void setNoteHasLabel(List<NoteHas> noteHasLabel) {
-        this.noteHasLabel = noteHasLabel;
+    public void setNote_has_label(List<NoteHas> note_has_label) {
+        this.note_has_label = note_has_label;
     }
 
-    public List<NoteHas> getNoteHasUser() {
-        return noteHasUser;
+    public List<NoteHas> getNote_has_user() {
+        return note_has_user;
     }
 
-    public void setNoteHasUser(List<NoteHas> noteHasUser) {
-        this.noteHasUser = noteHasUser;
+    public void setNote_has_user(List<NoteHas> note_has_user) {
+        this.note_has_user = note_has_user;
     }
 }

@@ -2,6 +2,8 @@ package com.nam.keep.model;
 
 import android.graphics.Bitmap;
 
+import java.util.List;
+
 public class Note {
     private long id;
     private int index;
@@ -21,6 +23,7 @@ public class Note {
     private String user_id;
     private String created_at;
     private String updated_at;
+    private List<User> users;
 
     public Note() {
     }
@@ -188,5 +191,13 @@ public class Note {
 
     public void setArchive(int archive) {
         this.archive = archive;
+    }
+
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 }
