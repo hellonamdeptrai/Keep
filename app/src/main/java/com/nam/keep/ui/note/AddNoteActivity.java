@@ -259,10 +259,16 @@ public class AddNoteActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         bottomSheetDialog.dismiss();
-                        // Tạo Intent để chia sẻ văn bản
-                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                        shareIntent.setType("text/plain");
-                        shareIntent.putExtra(Intent.EXTRA_TEXT, mTitle.getText() +"\n\n" + mContent.getText());
+                        // Tạo Intent để chia sẻ văn bản và danh sách ảnh
+                        Intent shareIntent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                        shareIntent.setType("image/*"); // Đặt loại dữ liệu là ảnh
+
+                        // Đặt văn bản cần chia sẻ
+                        String text = mTitle.getText() + "\n\n" + mContent.getText();
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, text);
+
+                        // Đặt danh sách URI vào Intent
+                        shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, listImageIntent);
 
                         // Kiểm tra và chọn ứng dụng chia sẻ
                         PackageManager packageManager = getPackageManager();
@@ -300,6 +306,9 @@ public class AddNoteActivity extends AppCompatActivity {
                         alert.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.nam_keep));
                     }
                 });
+                if (idUser == 0) {
+                    bottomSheetDialog.findViewById(R.id.add_person_note).setVisibility(View.GONE);
+                }
                 bottomSheetDialog.findViewById(R.id.add_person_note).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -362,7 +371,7 @@ public class AddNoteActivity extends AppCompatActivity {
             startActivityForResult(intent, 10);
             isOpenAddImage = false;
         }
-        if (isOpenAddBrush){
+        if (isOpenAddBrush || getIntent().hasExtra("brush_shortcut")){
             Intent intentLogin = new Intent(AddNoteActivity.this, PaintActivity.class);
             startActivityForResult(intentLogin, 11);
             isOpenAddBrush = false;
