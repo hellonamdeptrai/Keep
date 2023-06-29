@@ -353,11 +353,11 @@ public class AddNoteActivity extends AppCompatActivity {
         });
 
         // open
-        if (isOpenCheckBox){
+        if (isOpenCheckBox || getIntent().hasExtra("check_box_shortcut")){
             changeTextToCheckbox();
             isOpenCheckBox = false;
         }
-        if (isOpenAddImage){
+        if (isOpenAddImage|| getIntent().hasExtra("image_shortcut")){
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, 10);
             isOpenAddImage = false;
@@ -367,7 +367,7 @@ public class AddNoteActivity extends AppCompatActivity {
             startActivityForResult(intentLogin, 11);
             isOpenAddBrush = false;
         }
-        if (isOpenAddMic){
+        if (isOpenAddMic|| getIntent().hasExtra("mic_shortcut")){
             startSpeechRecognition();
             isOpenAddMic = false;
         }

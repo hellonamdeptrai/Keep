@@ -43,6 +43,7 @@ public class NotificationHelper {
 
                     if (delayMillis > 0) {
                         Data inputData = new Data.Builder()
+                                .putLong("id", noteItem.getId())
                                 .putString("title", noteItem.getTitle())
                                 .putString("message", noteItem.getContent())
                                 .putInt("notificationId", generateNotificationId()) // Truyền notificationId từ công việc

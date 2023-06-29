@@ -3,6 +3,9 @@ package com.nam.keep;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,11 +28,14 @@ import com.nam.keep.databinding.ActivityMainBinding;
 import com.nam.keep.notification.NotificationHelper;
 import com.nam.keep.ui.login.LoginActivity;
 import com.nam.keep.ui.note.AddNoteActivity;
+import com.nam.keep.ui.note.EditNoteActivity;
 import com.nam.keep.ui.search.SearchActivity;
 import com.nam.keep.ui.setting.SettingActivity;
 import com.nam.keep.ui.user.ProfileActivity;
 
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,6 +53,36 @@ public class MainActivity extends AppCompatActivity {
         bottomAppBar = findViewById(R.id.bottom_app_bar);
 
         setSupportActionBar(binding.appBarMain.toolbar);
+
+        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+
+        if (shortcutManager.isRequestPinShortcutSupported()) {
+            // Tạo đối tượng ShortcutInfo cho từng tùy chọn nút bấm nhanh
+            ShortcutInfo shortcut1 = new ShortcutInfo.Builder(this, "shortcut1")
+                    .setShortLabel("Văn bản ghi chú mới")
+                    .setIcon(Icon.createWithResource(this, R.drawable.ic_baseline_lightbulb_circle_24))
+                    .setIntent(new Intent(this, AddNoteActivity.class).setAction("shortcut1_action"))
+                    .build();
+            ShortcutInfo shortcut2 = new ShortcutInfo.Builder(this, "shortcut2")
+                    .setShortLabel("Danh sách mới")
+                    .setIcon(Icon.createWithResource(this, R.drawable.ic_outline_check_box_keep_24))
+                    .setIntent(new Intent(this, AddNoteActivity.class).setAction("shortcut2_action").putExtra("check_box_shortcut", true))
+                    .build();
+            ShortcutInfo shortcut3 = new ShortcutInfo.Builder(this, "shortcut3")
+                    .setShortLabel("Văn bản giọng nói mới")
+                    .setIcon(Icon.createWithResource(this, R.drawable.ic_baseline_mic_none_keep_24))
+                    .setIntent(new Intent(this, AddNoteActivity.class).setAction("shortcut3_action").putExtra("mic_shortcut", true))
+                    .build();
+            ShortcutInfo shortcut4 = new ShortcutInfo.Builder(this, "shortcut4")
+                    .setShortLabel("Ghi chứ ảnh mới")
+                    .setIcon(Icon.createWithResource(this, R.drawable.ic_outline_image_keep_24))
+                    .setIntent(new Intent(this, AddNoteActivity.class).setAction("shortcut4_action").putExtra("image_shortcut", true))
+                    .build();
+
+            // Đăng ký các tùy chọn nút bấm nhanh với ShortcutManager
+            shortcutManager.setDynamicShortcuts(Arrays.asList(shortcut1, shortcut2, shortcut3, shortcut4));
+        }
+
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
