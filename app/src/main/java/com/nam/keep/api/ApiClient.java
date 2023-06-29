@@ -321,6 +321,7 @@ public class ApiClient {
                 myDatabase.createUser(userCreate);
 
                 Toast.makeText(context, "Đăng ký tài khoản thành công", Toast.LENGTH_SHORT).show();
+                ((Activity) context).finish();
             }
 
             @Override

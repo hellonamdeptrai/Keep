@@ -87,8 +87,6 @@ public class SignUpActivity extends AppCompatActivity {
                 user.setPassword(mPassword.getText().toString());
                 user.setPassword_confirmation(mPasswordConfirmation.getText().toString());
                 apiClient.registerUser(SignUpActivity.this, user);
-
-                finish();
             }
         });
     }
