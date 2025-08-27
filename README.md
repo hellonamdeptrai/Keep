@@ -88,8 +88,6 @@ Dự án được xây dựng dựa trên các công nghệ và kiến trúc ph�
     * Chọn `File -> Open` và trỏ đến thư mục vừa clone.
 3.  **Đồng bộ Gradle:**
     * Android Studio sẽ tự động tải và đồng bộ các dependencies đã được định nghĩa trong file `build.gradle`.
-4.  **Cấu hình API (Nếu có):**
-    * Dự án sử dụng Retrofit để kết nối đến API. Bạn cần đảm bảo backend server đang chạy và cập nhật địa chỉ IP/domain trong mã nguồn.
 5.  **Chạy ứng dụng:**
     * Nhấn nút `Run 'app'` (Shift + F10) và chọn một máy ảo hoặc thiết bị thật để triển khai ứng dụng.
 
